@@ -2,7 +2,8 @@
 
 # Get input args
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate cd-hit
+conda activate #TODO: specify environment name
+
 
 INPUT_FASTA=$1
 OUTPUT_FILE=$2
