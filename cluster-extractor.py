@@ -11,9 +11,9 @@ def parse_cluster_file(cluster_file, target_cluster):
     """
     Parse the clustering file and extract sequence IDs from the specified cluster.
 
-    Args:
+    Parameters:
         cluster_file (str): Path to the clustering file
-        target_cluster (int): Cluster number to extract (e.g., 0 for Cluster 0)
+        target_cluster (int): Cluster number to extract
 
     Returns:
         set: Set of sequence IDs in the target cluster
@@ -49,7 +49,7 @@ def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None)
     """
     Extract sequences from FASTA file that match target sequence IDs and optionally primer.
 
-    Args:
+    Parameters:
         fasta_file (str): Path to FASTA file
         target_seq_ids (set): Set of sequence IDs from cluster
         primer_number (str): Optional primer to filter by (e.g., 'PR0001')
@@ -121,7 +121,7 @@ def write_fasta_output(sequences, output_file):
     """
     Write extracted sequences to a new FASTA file.
 
-    Args:
+    Parameters:
         sequences (dict): Dictionary of sequences
         output_file (str): Path to output FASTA file
     """
@@ -140,7 +140,7 @@ def extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_n
     """
     Convenience function to extract cluster sequences.
 
-    Args:
+    Parameters:
         cluster_file (str): Path to clustering file
         fasta_file (str): Path to FASTA file
         cluster_number (int): Cluster number to extract
