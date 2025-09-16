@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Extract sequences from a FASTA file based on a specific cluster from a clustering file.
+Extract sequence data from a FASTA file (input FASTA) based on an individual cluster from a 
+CD-HIT clustering file (.clstr) and output to a new FASTA file.
 """
 
 import re
