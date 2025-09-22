@@ -2,7 +2,7 @@
 
 # Get input args
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate #TODO: specify environment name
+conda activate base-invaders
 
 
 INPUT_FASTA=$1

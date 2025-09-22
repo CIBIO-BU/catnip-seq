@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Extract sequence data from a FASTA file (input FASTA) based on an individual cluster from a 
+Extract sequence data from a FASTA file (input FASTA) based on an individual cluster from a
 CD-HIT clustering file (.clstr) and output to a new FASTA file.
 """
 
 import re
 import sys
 from pathlib import Path
+import argparse
 
 def parse_cluster_file(cluster_file, target_cluster):
     """
@@ -19,7 +20,7 @@ def parse_cluster_file(cluster_file, target_cluster):
     Returns:
         set: Set of sequence IDs in the target cluster
     """
-    print(f"Parsing cluster file {cluster_file} for cluster {target_cluster}...")
+    print(f"Parsing cluster file {cluster_file} for Cluster {target_cluster}...")
     seq_ids = []
     current_cluster = None
     in_target_cluster = False
@@ -81,7 +82,7 @@ def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None)
                 # print('full_header:', full_header)
                 header_parts = line[1:].split('|')
 
-                if len(header_parts) >= 2:
+                if len(header_parts) > 2:
                     seq_id = header_parts[0]     # HPPPE1777-13
                     # print('seq_id:', seq_id)
                     primer = header_parts[1]     # PR0008
@@ -110,11 +111,8 @@ def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None)
         if current_id and current_id in sequences:
             sequences[current_id]["seq"] = ''.join(current_seq)
 
-    print(f"Found {total_in_cluster} sequences in cluster")
     if primer_number:
         print(f"After primer filtering ({primer_number}): {filtered_by_primer} sequences")
-    else:
-        print(f"No primer filtering applied: {len(sequences)} sequences extracted")
 
     return sequences
 
@@ -153,7 +151,7 @@ def extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_n
     """
     target_seq_ids = parse_cluster_file(cluster_file, cluster_number)
     if not target_seq_ids:
-        print(f"No sequences found in cluster {cluster_number}")
+        print(f"No sequences found in Cluster {cluster_number}")
         return 0
 
     sequences = extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number)
@@ -164,9 +162,18 @@ def extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_n
     return len(sequences)
 
 if __name__ == "__main__":
-    cluster_file = 'cdhit-mico-90_102440.clstr'
-    fasta_file = 'total_input-ID.fasta'
-    primer_number = 'PR0001'
-    cluster_number = 418
-    output_file = 'mico_90pcnt_lrg_mix.fasta'
-    extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_number, output_file)
+    arg_parser = argparse.ArgumentParser(description="Generate a FASTA file from a cluster.")
+    arg_parser.add_argument("cluster_file", type=str, help="Path to the .clstr file")
+    arg_parser.add_argument("--fasta_file", type=str, help="Path to the FASTA file containing sequences and respective seq-id.")
+    arg_parser.add_argument("--cluster_number", type=int, help="Number of the cluster to extract sequences from.")
+    arg_parser.add_argument("--output_file", type=str, help="Path to the output FASTA file.")
+    args = arg_parser.parse_args()
+    extract_cluster_sequences(cluster_file=args.cluster_file, fasta_file=args.fasta_file, cluster_number=args.cluster_number, output_file=args.output_file)
+
+
+    # cluster_file = 'cdhit-mico-90_102440.clstr'
+    # fasta_file = 'total_input-ID.fasta'
+    # primer_number = 'PR0001'
+    # cluster_number = 418
+    # output_file = 'mico_90pcnt_lrg_mix.fasta'
+    # extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_number, output_file)

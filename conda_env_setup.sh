@@ -6,13 +6,7 @@
 # cd-hit (4.8.1)
 # bowtie2 (2.4.1)
 
-ENV="$1"
-
-# If no environment name is given, use current directory name
-if [ "$ENV-" == "-" ]; then
-    CDIR=$(basename "$PWD")
-    ENV="${CDIR}_env"
-fi
+ENV="base-invaders"
 
 set -o pipefail
 set -e
@@ -43,7 +37,7 @@ echo "INFO: conda environment $ENV activated"
 REPOS=(-c bioconda -c conda-forge)
 
 # Install cd-hit 4.8.1 and bowtie2 2.4.1
-conda install -n "$ENV" -y "${REPOS[@]}" cd-hit=4.8.1 bowtie2=2.4.1
+conda install -n "$ENV" -y "${REPOS[@]}" cd-hit=4.8.1 bowtie2=2.5.4
 
 echo "All done. Python 3.11, cd-hit, and bowtie2 installed in environment $ENV."
 exit 0
