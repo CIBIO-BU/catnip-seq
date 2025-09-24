@@ -1,6 +1,9 @@
 import argparse
 
 def keep_seqid_only(fasta_file, separator='|', output_file=None):
+    """
+    Cleans a FASTA file by keeping only the sequence ID in the header.
+    """
     fasta_name = fasta_file.split("/")[-1].split(".")[0]
     print(f"Proccessing file: {fasta_file}")
     if output_file:
