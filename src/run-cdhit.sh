@@ -8,7 +8,6 @@ conda activate base-invaders
 INPUT_FASTA=$1
 OUTPUT_FILE=$2
 PERCENTAGE_IDENTITY=$3
-HEADER_SIZE=$4
 THREADS=$5
 AVAILABLE_MEMORY=$6
 
@@ -19,5 +18,5 @@ echo "Percentage Identity: $PERCENTAGE_IDENTITY"
 echo "Threads: $THREADS"
 echo "Available Memory: $AVAILABLE_MEMORY"
 
-cd-hit -i "$INPUT_FASTA" -o "$OUTPUT_FILE" ${SLURM_JOB_ID:-$$} -d 0 -c "$PERCENTAGE_IDENTITY" -G 1 -T "$THREADS" -M "$AVAILABLE_MEMORY"
+cd-hit -i "$INPUT_FASTA" -o "$OUTPUT_FILE" -d 0 -c "$PERCENTAGE_IDENTITY" -G 1 -T "$THREADS" -M "$AVAILABLE_MEMORY"
 

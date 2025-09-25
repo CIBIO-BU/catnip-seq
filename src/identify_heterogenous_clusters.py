@@ -56,9 +56,11 @@ def list_heterogenous_clusters(cluster_file, mapping_file):
     except Exception as e:
         raise Exception(f"Error loading cluster file: {e}")
 
-    print(f"Found {len(heterogenous_clusters)} heterogenous clusters.")
+    # print(f"Found {len(heterogenous_clusters)} heterogenous clusters.")
 
-    return heterogenous_clusters
+    # return heterogenous_clusters
+
+    print(" ".join(heterogenous_clusters))
 
 def _check_cluster_heterogeneity(cluster_number, cluster_data, heterogenous_clusters):
     sequences = cluster_data[cluster_number]
@@ -75,8 +77,6 @@ def _check_cluster_heterogeneity(cluster_number, cluster_data, heterogenous_clus
 def create_mapping_lookup_dictionary(mapping_file):
     try:
             map_df = pd.read_csv(mapping_file, sep='\t', header=None, index_col=None)
-            print(f"Loaded mapping file with {len(map_df)} entries:")
-            print(map_df.head())
     except FileNotFoundError:
         raise FileNotFoundError(f"Mapping file not found: {mapping_file}")
     except Exception as e:

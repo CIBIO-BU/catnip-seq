@@ -4,7 +4,7 @@ import os
 
 def create_mappings(fasta_file, sep='|', output_file=None):
     mapping_tab = []
-    fasta_file_name = os.path.split(fasta_file)[-1]
+    fasta_file_name = os.path.splitext(os.path.basename(fasta_file))[0]
     if not output_file:
         output_file = f"{fasta_file_name}_mapping.tsv"
 
@@ -19,7 +19,8 @@ def create_mappings(fasta_file, sep='|', output_file=None):
 
     mapping_tab_df.to_csv(output_file, sep='\t', header=False, index=False)
 
-    return mapping_tab_df
+    # return output_file
+    print(output_file)
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Map sequence IDs to categories or taxonomy from a FASTA file.")
@@ -27,6 +28,4 @@ if __name__ == "__main__":
     arg_parser.add_argument("--output", type=str, default=None, help="Output CSV file name (default: <fasta_file>_seqid_category_mapping.csv).")
     arg_parser.add_argument("--separator", type=str, default="|", help="Separator used in FASTA headers (default: '|').")
     args = arg_parser.parse_args()
-    df = create_mappings(args.fasta_file, sep=args.separator, output_file=args.output)
-
-    print(df.head())
+    create_mappings(args.fasta_file, sep=args.separator, output_file=args.output)

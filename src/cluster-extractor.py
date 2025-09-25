@@ -37,13 +37,11 @@ def parse_cluster_file(cluster_file, target_cluster):
 
                 # If we're in the target cluster, extract sequence IDs
             if in_target_cluster and line:
-                # Extract sequence ID from lines like "0	421aa, >EMPUL14850-22|TX022... at 80.05%"
-                seq_id_match = re.search(r'>([^|]+)\|', line)
-                if seq_id_match:
-                    seq_id = seq_id_match.group(1)
+                if not line.startswith('>'):
+                    seq_id = line.split(' ')[1].strip('>').strip('.').split('|')[0]
                     seq_ids.append(seq_id)
 
-    print(f"Found {len(seq_ids)} sequences in cluster {target_cluster}.")
+    # print(f"Found {len(seq_ids)} sequences in cluster {target_cluster}.")
 
     return seq_ids
 

@@ -6,3 +6,4 @@ test-cases/test-case-PR1-90prcnt/COI_mICOIintF_jgHCO2198-subset-ID.fasta
 test-cases/test-case-PR1-90prcnt/test-mbt/total_primer.tsv
 test-cases/test_primer_map.fasta
 test-cases/no_tx/ntx.sam
+test-workflow/*

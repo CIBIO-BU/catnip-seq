@@ -17,4 +17,5 @@ echo "Threads: $THREADS"
 
 bowtie2-build --quiet -f --threads "$THREADS" "$INPUT_FASTA" "$INDEX_NAME"
 
-bowtie2 -f -k 20 --threads "$THREADS" -x "$INDEX_NAME" -U "$INPUT_FASTA" -S "$ALIGN_NAME" #TODO: check if -k 20 is appropriate!!!!
+bowtie2 -f -k 20 --threads "$THREADS" -x "$INDEX_NAME" -U "$INPUT_FASTA" \
+| samtools sort -o "$ALIGN_NAME".bam #TODO: check if -k 20 is appropriate!!!!

@@ -34,6 +34,9 @@ def process_bam(alignment_file, mapping_file=None, save_processed=False, output_
     processed_df = pd.DataFrame(processed_data, columns=['query', 'query_cat', 'target', 'target_cat', 'edit_distance', 'divergence_prct'])
     # minimums = (processed_df.loc[processed_df.groupby(['query_cat', 'target_cat'])['edit_distance'].idxmin()].reset_index(drop=True))
 
+    # TODO: find minimum between query_cat and target_cat symetrics
+    # TODO: for OTL lookup find a hit in either query_cat and target_cat
+
     print(f"Successfully filtered the bam file:")
     print(processed_df.head())
     print(f"Total alignments after filtering: {processed_df.shape[0]}.")
