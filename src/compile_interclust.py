@@ -13,9 +13,15 @@ def compile_interclust(path):
         df = pd.read_csv(file, sep='\t', header=0, index_col=None)
         intra_clst_dfs.append(df)
 
-    combined_clsts = pd.concat(intra_clst_dfs, axis=0, ignore_index=True)
-
     expected_columns = ['query', 'query_cat', 'target', 'target_cat', 'edit_distance', 'divergence_prct']
+
+    # Filter out empty dataframes
+    non_empty_dfs = [df for df in intra_clst_dfs if not df.empty]
+    if non_empty_dfs:
+        combined_clsts = pd.concat(non_empty_dfs, axis=0, ignore_index=True)
+    else:
+        combined_clsts = pd.DataFrame(columns=expected_columns)
+
     if list(combined_clsts.columns) != expected_columns:
         print(f"Warning: Column names don't match expected. Found: {list(combined_clsts.columns)}")
         combined_clsts.columns = expected_columns

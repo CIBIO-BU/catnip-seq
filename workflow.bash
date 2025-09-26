@@ -12,7 +12,7 @@ if [ $# -lt 4 ]; then
 fi
 
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate base-invaders
+conda activate catnip
 
 # Load configuration
 CONFIG_FILE="${BASH_SOURCE[0]%/*}/config.sh"

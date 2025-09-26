@@ -2,7 +2,7 @@
 
 # Get input args
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate base-invaders
+conda activate catnip
 
 
 INPUT_FASTA=$1

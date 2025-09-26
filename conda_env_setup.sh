@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
 
-ENV_FILE="base-invaders-environment.yml"
+ENV_FILE="catnip-env.yml"
 set -o pipefail
 set -e
 

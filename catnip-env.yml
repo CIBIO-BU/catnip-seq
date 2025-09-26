@@ -1,4 +1,4 @@
-name: base-invaders
+name: catnip
 channels:
   - anaconda
   - conda-forge
