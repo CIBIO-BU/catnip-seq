@@ -1,6 +1,6 @@
 # CATnip Workflow
 
-CATnip (Categories & Nucleotide Information Parser)
+CATnip a tool to assess nucleotide divergence and sequence resolution between user-defined categories.
 
 ## Prerequisites
 
