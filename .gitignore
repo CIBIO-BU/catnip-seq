@@ -7,3 +7,5 @@ test-cases/test-case-PR1-90prcnt/test-mbt/total_primer.tsv
 test-cases/test_primer_map.fasta
 test-cases/no_tx/ntx.sam
 test-workflow/*
+!test-workflow/coi_micointf_mil.fasta
+!test-workflow/final_output_interclst.tsv

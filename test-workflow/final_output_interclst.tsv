@@ -1,0 +1,38 @@
+query	query_cat	target	target_cat	edit_distance	divergence_prct
+AODON115-20	('Aeshnidae', 'Aeshna', 'Aeshna affinis')	AODON037-20	('Aeshnidae', 'Brachytron', 'Brachytron pratense')	28	8.9
+AODON144-20	('Aeshnidae', 'Aeshna', 'Aeshna juncea')	AODON103-20	('Aeshnidae', 'Aeshna', 'Aeshna cyanea')	25	8.0
+AODON103-20	('Aeshnidae', 'Aeshna', 'Aeshna cyanea')	AODON640-20	('Aeshnidae', 'Aeshna', 'Aeshna mixta')	23	7.3
+AODON103-20	('Aeshnidae', 'Aeshna', 'Aeshna cyanea')	AODON586-20	('Aeshnidae', 'Aeshna', 'Aeshna subarctica')	25	8.0
+AODON152-20	('Aeshnidae', 'Aeshna', 'Aeshna grandis')	AODON144-20	('Aeshnidae', 'Aeshna', 'Aeshna juncea')	24	7.7
+AODON783-20	('Aeshnidae', 'Aeshna', 'Aeshna mixta')	AODON144-20	('Aeshnidae', 'Aeshna', 'Aeshna juncea')	25	8.0
+AODON144-20	('Aeshnidae', 'Aeshna', 'Aeshna juncea')	AODON586-20	('Aeshnidae', 'Aeshna', 'Aeshna subarctica')	12	3.8
+AODON783-20	('Aeshnidae', 'Aeshna', 'Aeshna mixta')	AODON586-20	('Aeshnidae', 'Aeshna', 'Aeshna subarctica')	23	7.3
+AODON081-20	('Aeshnidae', 'Anax', 'Anax imperator')	AODON063-20	('Aeshnidae', 'Anax', 'Anax parthenope')	7	2.2
+BEEEE023-15	('Apidae', 'Anthophora', 'Anthophora plumipes')	BEEEE082-15	('Apidae', 'Anthophora', 'Anthophora furcata')	28	8.9
+BEEEE068-15	('Apidae', 'Nomada', 'Nomada marshamella')	BEEEE089-15	('Apidae', 'Nomada', 'Nomada flavopicta')	28	8.9
+BSNHM1162-24	('Chironomidae', 'Metriocnemus', 'Metriocnemus deproperans')	BSNHM1161-24	('Chironomidae', 'Metriocnemus', 'Metriocnemus fertus')	0	0.0
+BARLG022-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus exsoletus')	BARLG096-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus cerinthes')	20	6.4
+BARLG016-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus tabidus')	BARLG067-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus foudrasi')	26	8.3
+BARLG025-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus juncicola')	BARLG042-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus ordinatus')	21	6.7
+BARLG104-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus strigicollis')	BARLG106-20	('Chrysomelidae', 'Longitarsus', 'Longitarsus luridus')	30	9.6
+AODON659-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion ornatum')	AODON007-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion puella')	1	0.3
+AODON659-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion ornatum')	AODON004-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion pulchellum')	4	1.3
+AODON007-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion puella')	AODON004-20	('Coenagrionidae', 'Coenagrion', 'Coenagrion pulchellum')	5	1.6
+AODON715-20	('Cordulegastridae', 'Cordulegaster', 'Cordulegaster boltonii')	AODON210-20	('Cordulegastridae', 'Cordulegaster', 'Cordulegaster heros')	25	8.0
+AODON155-20	('Corduliidae', 'Somatochlora', 'Somatochlora alpestris')	AODON142-20	('Corduliidae', 'Somatochlora', 'Somatochlora arctica')	16	5.1
+AODON155-20	('Corduliidae', 'Somatochlora', 'Somatochlora alpestris')	AODON070-20	('Corduliidae', 'Somatochlora', 'Somatochlora flavomaculata')	28	8.9
+AODON142-20	('Corduliidae', 'Somatochlora', 'Somatochlora arctica')	AODON070-20	('Corduliidae', 'Somatochlora', 'Somatochlora flavomaculata')	28	8.9
+AODON536-20	('Corduliidae', 'Somatochlora', 'Somatochlora meridionalis')	AODON131-20	('Corduliidae', 'Somatochlora', 'Somatochlora metallica')	1	0.3
+ANGEN360-16	('Erebidae', 'Utetheisa', nan)	ALYP006-19	('Noctuidae', 'Alypiodes', 'Alypiodes bimaculata')	25	8.0
+ANGEN360-16	('Erebidae', 'Utetheisa', nan)	ALYP001-18	('Noctuidae', 'Alypiodes', nan)	31	9.9
+ACCOM009-23	('Eurytomidae', 'Eurytoma', 'Eurytoma bigeloviae')	ACCOM014-23	('Eurytomidae', 'Eurytoma', 'Eurytoma contractura')	15	4.9
+AODON135-20	('Lestidae', 'Chalcolestes', 'Chalcolestes viridis')	AODON649-20	('Lestidae', 'Chalcolestes', 'Chalcolestes parvidens')	0	0.0
+AODON147-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia dubia')	AODON080-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia pectoralis')	13	4.2
+AODON147-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia dubia')	AODON668-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia rubicunda')	9	2.9
+AODON080-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia pectoralis')	AODON668-20	('Libellulidae', 'Leucorrhinia', 'Leucorrhinia rubicunda')	14	4.5
+AODON102-20	('Libellulidae', 'Orthetrum', 'Orthetrum cancellatum')	AODON041-20	('Libellulidae', 'Orthetrum', 'Orthetrum albistylum')	20	6.4
+AODON099-20	('Libellulidae', 'Orthetrum', 'Orthetrum coerulescens')	AODON041-20	('Libellulidae', 'Orthetrum', 'Orthetrum albistylum')	27	8.6
+AODON099-20	('Libellulidae', 'Orthetrum', 'Orthetrum coerulescens')	AODON066-20	('Libellulidae', 'Orthetrum', 'Orthetrum cancellatum')	28	8.9
+AODON111-20	('Libellulidae', 'Sympetrum', 'Sympetrum vulgatum')	AODON262-20	('Libellulidae', 'Sympetrum', 'Sympetrum danae')	31	9.9
+AODON588-20	('Libellulidae', 'Sympetrum', 'Sympetrum sanguineum')	AODON374-20	('Libellulidae', 'Sympetrum', 'Sympetrum meridionale')	31	9.9
+ALYP006-19	('Noctuidae', 'Alypiodes', 'Alypiodes bimaculata')	ALYP001-18	('Noctuidae', 'Alypiodes', nan)	25	8.0

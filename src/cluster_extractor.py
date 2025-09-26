@@ -128,7 +128,7 @@ def write_fasta_output(sequences, output_file):
             seq_id = header.split('|')[0][1:]
             # tx_id = header.split('|')[2] if len(header.split('|')) > 2 else 'ERROR'
             # new_header = f">{seq_id}|{tx_id}"
-            f.write(f"{seq_id}\n")
+            f.write(f">{seq_id}\n")
             f.write(f"{data['seq']}\n")
 
     print(f"Wrote {len(sequences)} sequences to {output_file}")

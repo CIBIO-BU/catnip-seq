@@ -34,15 +34,15 @@ if [ ! -f "$INPUT_FASTA" ]; then
 fi
 
 echo "Processing FASTA file: $INPUT_FASTA"
-echo "Identity threshold: $PERCENTAGE_IDENTITY"
-echo "Threads: $THREADS"
-echo "Memory: $AVAILABLE_MEMORY"
+# echo "  Identity threshold: $PERCENTAGE_IDENTITY"
+# echo "  Threads: $THREADS"
+# echo "  Memory: $AVAILABLE_MEMORY"
 
-echo "Generating mapping file..."
+echo "  Mapping sequence IDs to categories..."
 MAPPING_FILE="${INPUT_FASTA%.fasta}_mapping.tsv"
 python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA" >/dev/null 2>&1
 
-echo "Cleaning FASTA file..."
+# echo "Cleaning FASTA file..."
 python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA" >/dev/null 2>&1
 
 CLEAN_FASTA="${INPUT_FASTA%.fasta}_clean.fasta"
@@ -53,8 +53,8 @@ if [ ! -f "$CLEAN_FASTA" ]; then
     exit 1
 fi
 
-echo "Running CD-HIT clustering..."
-bash "${SCRIPTS_DIR}/run-cdhit.sh" \
+echo "  Clustering sequences ("$PERCENTAGE_IDENTITY")..."
+bash "${SCRIPTS_DIR}/run_cdhit.sh" \
     "$CLEAN_FASTA" "$OUTPUT_FILE_NAME" \
     "$PERCENTAGE_IDENTITY" "$THREADS" \
     "$AVAILABLE_MEMORY" "$PERCENTAGE_IDENTITY" \
@@ -65,7 +65,7 @@ if [ ! -f "$OUTPUT_FILE_NAME" ]; then
     exit 1
 fi
 
-echo "Identify heterogenous clusters..."
+echo "  Identifying heterogenous clusters..."
 OUTPUT_FILE="${INPUT_FASTA%.fasta}.clstr"
 HET_CLUSTERS_LIST=$(python "${SCRIPTS_DIR}/identify_heterogenous_clusters.py" \
     --cluster_file "$OUTPUT_FILE" \
@@ -76,16 +76,20 @@ if [ -z "$HET_CLUSTERS_LIST" ]; then
     exit 0
 fi
 
+count=0
+total=$(echo "$HET_CLUSTERS_LIST" | wc -w)
 echo "Heterogenous clusters found: ${HET_CLUSTERS_LIST}."
 for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
-    echo "Processing cluster: $CLUSTER_NUMBER"
+    count=$((count + 1))
+    percent=$(( 100 * count / total ))
+    printf "\rProcessing clusters: [%-50s] %3d%%" $(printf "%*s" $(( percent * 50 / 100 )) | tr ' ' '#') "$percent"
 
     CST_OUTPUT_FILE="${OUTPUT_FILE_NAME}_${CLUSTER_NUMBER}.fasta"
     INDEX_NAME="${CST_OUTPUT_FILE%.fasta}_index"
-    ALIGN_NAME="${CST_OUTPUT_FILE}_align"
+    ALIGN_NAME="${CST_OUTPUT_FILE%.fasta}_align"
 
-    echo "  Extracting cluster sequences..."
-    python "${SCRIPTS_DIR}/cluster-extractor.py" "$OUTPUT_FILE" \
+    # echo "  Extracting cluster sequences..."
+    python "${SCRIPTS_DIR}/cluster_extractor.py" "$OUTPUT_FILE" \
         --fasta_file "$CLEAN_FASTA" \
         --cluster_number "$CLUSTER_NUMBER" \
         --output_file "$CST_OUTPUT_FILE" \
@@ -96,25 +100,30 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
         continue
     fi
 
-    echo "  Running Bowtie alignment..."
-    bash "${SCRIPTS_DIR}/run-bowtie-aligner.sh" \
+    # echo "  Running Bowtie alignment..."
+    bash "${SCRIPTS_DIR}/run_bowtie_aligner.sh" \
         "$CST_OUTPUT_FILE" "$INDEX_NAME" \
         1 $ALIGN_NAME \
-        # >/dev/null 2>&1
+        >/dev/null 2>&1
 
     BAM_FILE="${ALIGN_NAME}.bam"
-    if [-f "$BAM_FILE" ]; then
-        echo "  Pre-processing BAM file..."
-        python "${SCRIPTS_DIR}/pre-process-bam.py" \
+    if [ -f "$BAM_FILE" ]; then
+        # echo "  Pre-processing BAM file..."
+        python "${SCRIPTS_DIR}/pre_process_bam.py" \
         --bam_file "$BAM_FILE" \
         --mapping_file "$MAPPING_FILE" \
-        --save
+        --save \
+        # >/dev/null 2>&1
     else
         echo "  Warning: BAM file $BAM_FILE not found, skipping pre-processing..."
     fi
 
-    echo "  Completed processing cluster: $CLUSTER_NUMBER."
+    # echo "  Completed processing cluster: $CLUSTER_NUMBER."
 
 done
 
+python "${SCRIPTS_DIR}/compile_interclust.py" \
+    .
+
+echo
 echo "All processing completed!"
