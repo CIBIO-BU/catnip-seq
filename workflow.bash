@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
 
 set -euo pipefail
 
@@ -11,8 +12,8 @@ if [ $# -lt 4 ]; then
     exit 1
 fi
 
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate catnip
+#source ~/miniconda3/etc/profile.d/conda.sh
+#conda activate catnip
 
 # Load configuration
 CONFIG_FILE="${BASH_SOURCE[0]%/*}/config.sh"
