@@ -11,7 +11,7 @@ CATnip a tool to assess nucleotide divergence and sequence resolution between us
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/CIBIO-BU/category-resolution
+   git clone https://github.com/CIBIO-BU/catnip
    cd catnip
    ```
 
