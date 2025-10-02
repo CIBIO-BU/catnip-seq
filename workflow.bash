@@ -3,20 +3,23 @@
 
 set -euo pipefail
 
-if [ $# -lt 4 ]; then
-    echo "Usage: $0 INPUT_FASTA PERCENTAGE_IDENTITY THREADS AVAILABLE_MEMORY"
-    echo "  INPUT_FASTA: Path to input FASTA file"
-    echo "  PERCENTAGE_IDENTITY: Identity threshold for clustering"
-    echo "  THREADS: Number of threads to use"
-    echo "  AVAILABLE_MEMORY: Memory limit for processing"
-    exit 1
-fi
+# if [ $# -lt 4 ]; then
+#     echo "Usage: $0 INPUT_FASTA PERCENTAGE_IDENTITY THREADS AVAILABLE_MEMORY"
+#     echo "  INPUT_FASTA: Path to input FASTA file"
+#     echo "  PERCENTAGE_IDENTITY: Identity threshold for clustering"
+#     echo "  THREADS: Number of threads to use"
+#     echo "  AVAILABLE_MEMORY: Memory limit for processing"
+#     exit 1
+# fi
 
 #source ~/miniconda3/etc/profile.d/conda.sh
 #conda activate catnip
 
+start=$(date +%s)
+
 # Load configuration
-CONFIG_FILE="${BASH_SOURCE[0]%/*}/config.sh"
+CONFIG_DIR="$(dirname "$(realpath "$BASH_SOURCE")")"
+CONFIG_FILE="$CONFIG_DIR/config.sh"
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
 else
@@ -24,15 +27,68 @@ else
     exit 1
 fi
 
-INPUT_FASTA="$1"
-PERCENTAGE_IDENTITY="$2"
-THREADS="$3"
-AVAILABLE_MEMORY="$4"
+INPUT_FASTA=""
+PERCENTAGE_IDENTITY=90
+THREADS=1
+AVAILABLE_MEMORY=200
 
-if [ ! -f "$INPUT_FASTA" ]; then
-    echo "Error: Input Fasta file "$INPUT_FASTA" does not exist."
-    exit 1
-fi
+# Help function
+help() {
+    cat << EOF
+Usage: ${0##*/} -i INPUT_FASTA [OPTIONS]
+
+Compute nucleotide divergence across user-defined categories.
+
+Required arguments:
+    -i INPUT_FASTA          Input FASTA file path.
+
+Optional arguments:
+    -p PERCENTAGE_IDENTITY  Threshold for the percentage identity (default: 90)
+    -t THREADS              Number of threads to use (default: 1)
+    -m AVAILABLE_MEMOERY    Available memory in MB   (default: 200)
+    -h                      Displays this help meassage and exits.
+
+Example:
+    ${0##*/} -i sequences.fasta -p 95 -t 8 -m 16000
+
+EOF
+}
+
+while getopts "i:p:t:m:h" opt; do
+    case $opt in
+        i)
+            INPUT_FASTA="$OPTARG"
+            ;;
+        P)
+            PERCENTAGE_IDENTITY="$OPTARG"
+            ;;
+        t)
+            THREADS="$OPTARG"
+            ;;
+        m)
+            AVAILABLE_MEMOERY="$OPTARG"
+            ;;
+        h)
+            help
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            help
+            exit 1
+            ;;
+        :)
+            echo "Missing required parameter: -$OPTARG" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# if [ ! -f "$INPUT_FASTA" ]; then
+#     echo "Error: Input Fasta file "$INPUT_FASTA" does not exist."
+#     exit 1
+# fi
 
 echo "Processing FASTA file: $INPUT_FASTA"
 # echo "  Identity threshold: $PERCENTAGE_IDENTITY"
@@ -125,6 +181,10 @@ done
 
 python "${SCRIPTS_DIR}/compile_interclust.py" \
     .
+
+end=$(date +%s)
+runtime=$((end - start))
+echo "Script took $runtime seconds"
 
 echo
 echo "All processing completed!"

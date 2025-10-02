@@ -8,4 +8,5 @@ test-cases/test_primer_map.fasta
 test-cases/no_tx/ntx.sam
 test-workflow/*
 !test-workflow/coi_micointf_mil.fasta
-!test-workflow/final_output_interclst_TEST.tsv
+!test-workflow/final_output_interclst_TEST.tsv./test-cases/total_input-ID.fasta
+test-all-lcuster/test_primer_map.fasta
