@@ -27,11 +27,6 @@ else
     exit 1
 fi
 
-INPUT_FASTA=""
-PERCENTAGE_IDENTITY=90
-THREADS=1
-AVAILABLE_MEMORY=200
-
 # Help function
 help() {
     cat << EOF
@@ -41,11 +36,11 @@ Compute nucleotide divergence across user-defined categories.
 
 Required arguments:
     -i INPUT_FASTA          Input FASTA file path.
-
-Optional arguments:
     -p PERCENTAGE_IDENTITY  Threshold for the percentage identity (default: 90)
     -t THREADS              Number of threads to use (default: 1)
-    -m AVAILABLE_MEMOERY    Available memory in MB   (default: 200)
+    -m AVAILABLE_MEMORY    Available memory in MB   (default: 200)
+
+Optional arguments:
     -h                      Displays this help meassage and exits.
 
 Example:
@@ -59,14 +54,14 @@ while getopts "i:p:t:m:h" opt; do
         i)
             INPUT_FASTA="$OPTARG"
             ;;
-        P)
+        p)
             PERCENTAGE_IDENTITY="$OPTARG"
             ;;
         t)
             THREADS="$OPTARG"
             ;;
         m)
-            AVAILABLE_MEMOERY="$OPTARG"
+            AVAILABLE_MEMORY="$OPTARG"
             ;;
         h)
             help
@@ -85,22 +80,24 @@ while getopts "i:p:t:m:h" opt; do
     esac
 done
 
-# if [ ! -f "$INPUT_FASTA" ]; then
-#     echo "Error: Input Fasta file "$INPUT_FASTA" does not exist."
-#     exit 1
-# fi
+if [ ! -f "$INPUT_FASTA" ]; then
+    echo "Error: Input Fasta file "$INPUT_FASTA" does not exist."
+    exit 1
+fi
+
+SCRIPTS_DIR="$CONFIG_DIR/src"
 
 echo "Processing FASTA file: $INPUT_FASTA"
-# echo "  Identity threshold: $PERCENTAGE_IDENTITY"
-# echo "  Threads: $THREADS"
-# echo "  Memory: $AVAILABLE_MEMORY"
+echo "  Identity threshold: $PERCENTAGE_IDENTITY"
+echo "  Threads: $THREADS"
+echo "  Memory: $AVAILABLE_MEMORY"
 
 echo "  Mapping sequence IDs to categories..."
 MAPPING_FILE="${INPUT_FASTA%.fasta}_mapping.tsv"
-python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA" >/dev/null 2>&1
+python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA" #>/dev/null 2>&1
 
 # echo "Cleaning FASTA file..."
-python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA" >/dev/null 2>&1
+python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA" #>/dev/null 2>&1
 
 CLEAN_FASTA="${INPUT_FASTA%.fasta}_clean.fasta"
 OUTPUT_FILE_NAME="${INPUT_FASTA%.fasta}"
@@ -114,8 +111,8 @@ echo "  Clustering sequences ("$PERCENTAGE_IDENTITY")..."
 bash "${SCRIPTS_DIR}/run_cdhit.sh" \
     "$CLEAN_FASTA" "$OUTPUT_FILE_NAME" \
     "$PERCENTAGE_IDENTITY" "$THREADS" \
-    "$AVAILABLE_MEMORY" "$PERCENTAGE_IDENTITY" \
-    >/dev/null 2>&1
+    "$AVAILABLE_MEMORY" # \
+    # >/dev/null 2>&1
 
 if [ ! -f "$OUTPUT_FILE_NAME" ]; then
     echo "Error: Clustering output was not created."
@@ -149,8 +146,8 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
     python "${SCRIPTS_DIR}/cluster_extractor.py" "$OUTPUT_FILE" \
         --fasta_file "$CLEAN_FASTA" \
         --cluster_number "$CLUSTER_NUMBER" \
-        --output_file "$CST_OUTPUT_FILE" \
-        >/dev/null 2>&1
+        --output_file "$CST_OUTPUT_FILE" # \
+        # >/dev/null 2>&1
 
     if [ ! -f "$OUTPUT_FILE" ]; then
         echo " Warning: Failed to extract cluster $CLUSTER_NUMBER, skipping..."
@@ -160,15 +157,15 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
     # echo "  Running Bowtie alignment..."
     bash "${SCRIPTS_DIR}/run_bowtie_aligner.sh" \
         "$CST_OUTPUT_FILE" "$INDEX_NAME" \
-        1 $ALIGN_NAME \
-        >/dev/null 2>&1
+        1 $ALIGN_NAME # \
+        # >/dev/null 2>&1
 
     BAM_FILE="${ALIGN_NAME}.bam"
     if [ -f "$BAM_FILE" ]; then
         # echo "  Pre-processing BAM file..."
         python "${SCRIPTS_DIR}/pre_process_bam.py" \
         --bam_file "$BAM_FILE" \
-        --mapping_file "$MAPPING_FILE" \
+        --mapping_file "$MAPPING_FILE" # \
         --save \
         # >/dev/null 2>&1
     else

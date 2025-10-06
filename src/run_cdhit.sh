@@ -8,8 +8,8 @@ conda activate catnip
 INPUT_FASTA=$1
 OUTPUT_FILE=$2
 PERCENTAGE_IDENTITY=$3
-THREADS=$5
-AVAILABLE_MEMORY=$6
+THREADS=$4
+AVAILABLE_MEMORY=$5
 
 echo "Running CD-HIT with the following parameters:"
 echo "Input FASTA: $INPUT_FASTA"
