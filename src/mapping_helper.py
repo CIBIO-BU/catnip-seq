@@ -20,7 +20,7 @@ def create_mappings(fasta_file, sep='|', output_file=None):
     mapping_tab_df.to_csv(output_file, sep='\t', header=False, index=False)
 
     # return output_file
-    print(output_file)
+    # print(output_file)
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Map sequence IDs to categories or taxonomy from a FASTA file.")

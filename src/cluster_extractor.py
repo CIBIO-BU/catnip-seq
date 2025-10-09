@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 import argparse
 
-def parse_cluster_file(cluster_file, target_cluster):
+def parse_cluster_file(cluster_file, target_cluster, verbose=False):
     """
     Parse the clustering file and extract sequence IDs from the specified cluster.
 
@@ -20,7 +20,8 @@ def parse_cluster_file(cluster_file, target_cluster):
     Returns:
         set: Set of sequence IDs in the target cluster
     """
-    print(f"Parsing cluster file {cluster_file} for Cluster {target_cluster}...")
+    if verbose:
+        print(f"Parsing cluster file {cluster_file} for Cluster {target_cluster}...")
     seq_ids = []
     current_cluster = None
     in_target_cluster = False
@@ -45,7 +46,7 @@ def parse_cluster_file(cluster_file, target_cluster):
 
     return seq_ids
 
-def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None):
+def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None, verbose=False):
     """
     Extract sequences from FASTA file that match target sequence IDs and optionally primer.
 
@@ -57,9 +58,10 @@ def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None)
     Returns:
         dict: Dictionary of extracted sequences
     """
-    print(f"Extracting sequences from {fasta_file}...")
-    if primer_number:
-        print(f"Filtering by primer: {primer_number}")
+    if verbose:
+        print(f"Extracting sequences from {fasta_file}...")
+        if primer_number:
+            print(f"Filtering by primer: {primer_number}")
 
     sequences = {}
     current_id = None
@@ -109,12 +111,13 @@ def extract_sequences_from_fasta(fasta_file, target_seq_ids, primer_number=None)
         if current_id and current_id in sequences:
             sequences[current_id]["seq"] = ''.join(current_seq)
 
-    if primer_number:
-        print(f"After primer filtering ({primer_number}): {filtered_by_primer} sequences")
+    if verbose:
+        if primer_number:
+            print(f"After primer filtering ({primer_number}): {filtered_by_primer} sequences")
 
     return sequences
 
-def write_fasta_output(sequences, output_file):
+def write_fasta_output(sequences, output_file, verbose=False):
     """
     Write extracted sequences to a new FASTA file.
 
@@ -131,7 +134,8 @@ def write_fasta_output(sequences, output_file):
             f.write(f">{seq_id}\n")
             f.write(f"{data['seq']}\n")
 
-    print(f"Wrote {len(sequences)} sequences to {output_file}")
+    if verbose:
+        print(f"Wrote {len(sequences)} sequences to {output_file}")
 
 def extract_cluster_sequences(cluster_file, fasta_file, cluster_number, primer_number=None, output_file=None):
     """

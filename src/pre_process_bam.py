@@ -31,7 +31,7 @@ def find_minimums(df):
 
     return minimums
 
-def process_bam(alignment_file, mapping_file=None, save_processed=False, output_file=None):
+def process_bam(alignment_file, mapping_file=None, save_processed=False):
     seqid_to_cat = create_mapping_lookup_dictionary(mapping_file)
     processed_data = []
 
@@ -68,9 +68,8 @@ def process_bam(alignment_file, mapping_file=None, save_processed=False, output_
     # print(f"Total alignments after filtering: {processed_df.shape[0]}.")
 
     if save_processed == True:
-        if not output_file:
-            base = os.path.splitext(os.path.basename(alignment_file))[0]
-        # processed_df.to_csv(f"{base}_processed".tsv", sep='\t', header=True, index=None)
+        base = os.path.splitext(os.path.basename(alignment_file))[0]
+        # processed_df.to_csv(f"{base}_processed.tsv", sep='\t', header=True, index=None)
         minimums.to_csv(f'{base}_intraclst_mins.tsv', sep='\t', header=True, index=None)
 
     return processed_df

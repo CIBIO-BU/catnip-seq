@@ -3,29 +3,14 @@
 
 set -euo pipefail
 
-# if [ $# -lt 4 ]; then
-#     echo "Usage: $0 INPUT_FASTA PERCENTAGE_IDENTITY THREADS AVAILABLE_MEMORY"
-#     echo "  INPUT_FASTA: Path to input FASTA file"
-#     echo "  PERCENTAGE_IDENTITY: Identity threshold for clustering"
-#     echo "  THREADS: Number of threads to use"
-#     echo "  AVAILABLE_MEMORY: Memory limit for processing"
-#     exit 1
-# fi
+WRKFL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-#source ~/miniconda3/etc/profile.d/conda.sh
-#conda activate catnip
-
-start=$(date +%s)
-
-# Load configuration
-CONFIG_DIR="$(dirname "$(realpath "$BASH_SOURCE")")"
-CONFIG_FILE="$CONFIG_DIR/config.sh"
-if [ -f "$CONFIG_FILE" ]; then
-    source "$CONFIG_FILE"
-else
-    echo "Error: Configuration file not found at $CONFIG_FILE"
-    exit 1
-fi
+# Parse arguments before entering timed section
+# Default values
+PERCENTAGE_IDENTITY=90
+THREADS=1
+AVAILABLE_MEMORY=800
+SAVE_INTERMEDIARY=false
 
 # Help function
 help() {
@@ -36,20 +21,21 @@ Compute nucleotide divergence across user-defined categories.
 
 Required arguments:
     -i INPUT_FASTA          Input FASTA file path.
-    -p PERCENTAGE_IDENTITY  Threshold for the percentage identity (default: 90)
-    -t THREADS              Number of threads to use (default: 1)
-    -m AVAILABLE_MEMORY    Available memory in MB   (default: 200)
 
 Optional arguments:
+    -p PERCENTAGE_IDENTITY  Threshold for the percentage identity (default: 90)
+    -t THREADS              Number of threads to use (default: 1)
+    -m AVAILABLE_MEMORY     Available memory in MB   (default: 200)
+    -s                      Save intermediary files (cluster BAM and minimu files; default: false)
     -h                      Displays this help meassage and exits.
 
 Example:
-    ${0##*/} -i sequences.fasta -p 95 -t 8 -m 16000
+    ${0##*/} -i sequences.fasta -p 95 -t 8 -m 16000 -s
 
 EOF
 }
 
-while getopts "i:p:t:m:h" opt; do
+while getopts "i:p:t:m:sh" opt; do
     case $opt in
         i)
             INPUT_FASTA="$OPTARG"
@@ -62,6 +48,9 @@ while getopts "i:p:t:m:h" opt; do
             ;;
         m)
             AVAILABLE_MEMORY="$OPTARG"
+            ;;
+        s)
+            SAVE_INTERMEDIARY=true
             ;;
         h)
             help
@@ -85,16 +74,35 @@ if [ ! -f "$INPUT_FASTA" ]; then
     exit 1
 fi
 
+logfile="timing.log"
+/usr/bin/time -f "Time elapsed: %E | User CPU: %Us | System CPU: %Ss | Max RSS: %M KB" -o "$logfile" bash -c '
+
+# Set scripts directory
+CONFIG_DIR="'"$WRKFL_DIR"'"
 SCRIPTS_DIR="$CONFIG_DIR/src"
 
-echo "Processing FASTA file: $INPUT_FASTA"
+# Import variables
+INPUT_FASTA="'"$INPUT_FASTA"'"
+PERCENTAGE_IDENTITY="'"$PERCENTAGE_IDENTITY"'"
+THREADS="'"$THREADS"'"
+AVAILABLE_MEMORY="'"$AVAILABLE_MEMORY"'"
+SAVE_INTERMEDIARY="'"$SAVE_INTERMEDIARY"'"
+
+echo "Starting workflow with the following parameters:"
+echo "  Input file: $INPUT_FASTA"
 echo "  Identity threshold: $PERCENTAGE_IDENTITY"
 echo "  Threads: $THREADS"
 echo "  Memory: $AVAILABLE_MEMORY"
+echo "  Save intermediary files: $SAVE_INTERMEDIARY"
 
-echo "  Mapping sequence IDs to categories..."
+
 MAPPING_FILE="${INPUT_FASTA%.fasta}_mapping.tsv"
-python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA" #>/dev/null 2>&1
+if [ -f "$MAPPING_FILE" ]; then
+    echo "Mapping file already exists: $MAPPING_FILE. Skipping mapping step..."
+else
+    echo "Mapping sequence IDs to categories..."
+    python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA" #>/dev/null 2>&1
+fi
 
 # echo "Cleaning FASTA file..."
 python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA" #>/dev/null 2>&1
@@ -107,19 +115,24 @@ if [ ! -f "$CLEAN_FASTA" ]; then
     exit 1
 fi
 
-echo "  Clustering sequences ("$PERCENTAGE_IDENTITY")..."
-bash "${SCRIPTS_DIR}/run_cdhit.sh" \
-    "$CLEAN_FASTA" "$OUTPUT_FILE_NAME" \
-    "$PERCENTAGE_IDENTITY" "$THREADS" \
-    "$AVAILABLE_MEMORY" # \
-    # >/dev/null 2>&1
+CLSTR_FILE="${OUTPUT_FILE_NAME}.clstr"
+if [ -f "$CLSTR_FILE" ]; then
+    echo "Cluster file already exists: $CLSTR_FILE. Skipping clustering step..."
+else
+    echo "Clustering sequences at ("$PERCENTAGE_IDENTITY") identity..."
+    bash "${SCRIPTS_DIR}/run_cdhit.sh" \
+        "$CLEAN_FASTA" "$OUTPUT_FILE_NAME" \
+        "$PERCENTAGE_IDENTITY" "$THREADS" \
+        "$AVAILABLE_MEMORY" \
+        >/dev/null 2>&1
+fi
 
 if [ ! -f "$OUTPUT_FILE_NAME" ]; then
     echo "Error: Clustering output was not created."
     exit 1
 fi
 
-echo "  Identifying heterogenous clusters..."
+echo "Identifying heterogenous clusters..."
 OUTPUT_FILE="${INPUT_FASTA%.fasta}.clstr"
 HET_CLUSTERS_LIST=$(python "${SCRIPTS_DIR}/identify_heterogenous_clusters.py" \
     --cluster_file "$OUTPUT_FILE" \
@@ -132,11 +145,13 @@ fi
 
 count=0
 total=$(echo "$HET_CLUSTERS_LIST" | wc -w)
-echo "Heterogenous clusters found: ${HET_CLUSTERS_LIST}."
+echo "Found $total heterogenous clusters: $HET_CLUSTERS_LIST"
+
 for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
     count=$((count + 1))
     percent=$(( 100 * count / total ))
-    printf "\rProcessing clusters: [%-50s] %3d%%" $(printf "%*s" $(( percent * 50 / 100 )) | tr ' ' '#') "$percent"
+    printf "\rProcessing clusters: [%-50s] %3d%%" \
+        $(printf "%*s" $(( percent * 50 / 100 )) | tr " " "#") "$percent"
 
     CST_OUTPUT_FILE="${OUTPUT_FILE_NAME}_${CLUSTER_NUMBER}.fasta"
     INDEX_NAME="${CST_OUTPUT_FILE%.fasta}_index"
@@ -165,9 +180,10 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
         # echo "  Pre-processing BAM file..."
         python "${SCRIPTS_DIR}/pre_process_bam.py" \
         --bam_file "$BAM_FILE" \
-        --mapping_file "$MAPPING_FILE" # \
-        --save \
+        --mapping_file "$MAPPING_FILE" \
+        --save #\
         # >/dev/null 2>&1
+
     else
         echo "  Warning: BAM file $BAM_FILE not found, skipping pre-processing..."
     fi
@@ -176,12 +192,20 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
 
 done
 
-python "${SCRIPTS_DIR}/compile_interclust.py" \
-    .
+echo
+echo "Compiling inter-cluster results..."
+python "${SCRIPTS_DIR}/compile_interclust.py" .
 
-end=$(date +%s)
-runtime=$((end - start))
-echo "Script took $runtime seconds"
+# Clean up intermediary files if not saving
+if [ "$SAVE_INTERMEDIARY" = "false" ]; then
+    find . -type f -name \*_align.bam -delete
+    find . -type f -name \*_intraclst_mins.tsv -delete
+fi
 
 echo
 echo "All processing completed!"
+
+'
+echo
+echo "Log:"
+cat "$logfile"
