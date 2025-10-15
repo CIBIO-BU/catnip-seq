@@ -6,7 +6,8 @@ test-cases/test-case-PR1-90prcnt/COI_mICOIintF_jgHCO2198-subset-ID.fasta
 test-cases/test-case-PR1-90prcnt/test-mbt/total_primer.tsv
 test-cases/test_primer_map.fasta
 test-cases/no_tx/ntx.sam
-test-workflow/*
-!test-workflow/coi_micointf_mil.fasta
-!test-workflow/final_output_interclst_TEST.tsv./test-cases/total_input-ID.fasta
+test-micointf-mil/*
+!test-micointf-mil/coi_micointf_mil.fasta
+!test-micointf-mil/final_output_interclst_TEST.tsv
+./test-cases/total_input-ID.fasta
 test-micointf-full/*

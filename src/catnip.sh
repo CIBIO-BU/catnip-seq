@@ -1,55 +1,107 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Parse arguments
-INPUT_FASTA="$1"
-PERCENTAGE_IDENTITY="$2"
-THREADS="$3"
-AVAILABLE_MEMORY="$4"
-SAVE_INTERMEDIARY="$5"
-PROJECT_DIR="$6"
 
 SCRIPTS_DIR="$PROJECT_DIR/src"
 
+# Parse arguments
+INPUT_FASTA="$1"
+MAPPING_FILE="$2"
+INDEX_COLS="$3"
+PERCENTAGE_IDENTITY="$4"
+THREADS="$5"
+AVAILABLE_MEMORY="$6"
+SAVE_INTERMEDIARY="$7"
+PROJECT_DIR="$8"
+
+IFS=',' read -r -a index_cols_array <<< "$INDEX_COLS"
+IFS=',' read -r -a perc_id_array <<< "$PERCENTAGE_IDENTITY"
+
+if [ "${#index_cols_array[@]}" -gt 4]; then
+    echo "Error: Cannot have more than 4 columns in INDEX_COLS."
+    exit 1
+fi
+
+if [ "${#index_cols_array[@]}" -eq 0 ]; then
+    echo "Error: At least one INDEX_COL is required." >&2
+    exit 1
+fi
+
+if [ "${#perc_id_array[@]}" -gt 4]; then
+    echo "Error: Cannot have more than 4 PERCENTAGE_IDENTITY."
+    exit 1
+fi
+
+if [ "${#perc_id_array[@]}" -eq 1 ]; then
+    single_value="${perc_id_array[0]}" # when a single value provided, replicate it for each index column
+    perc_id_array=()
+    for ((i=0; i<${#index_cols_array[@]}; i++)); do
+        perc_id_array+=("$single_value")
+    done
+elif [ "${#perc_id_array[@]}" -ne "${#index_cols_array[@]}" ]; then
+    echo "Error: Number of PERCENTAGE_IDENTITY values (${#perc_id_array[@]}) must match number of INDEX_COLS (${#index_cols_array[@]})." >&2
+    exit 1
+fi
+
+for i in "${!index_cols_array[@]}"; do
+    echo "Column: ${index_cols_array[$i]} -> Percentage Identity: ${perc_id_array[$i]}"
+done
+
+
 echo "Starting workflow with the following parameters:"
 echo "  Input file: $INPUT_FASTA"
-echo "  Identity threshold: $PERCENTAGE_IDENTITY"
+echo "  Mapping file: $MAPPING_FILE"
+for i in "${!index_cols_array[@]}"; do
+    echo "Column: ${index_cols_array[$i]} -> Percentage Identity: ${perc_id_array[$i]}"
+done
 echo "  Threads: $THREADS"
 echo "  Memory: $AVAILABLE_MEMORY MB"
 echo "  Save intermediary files: $SAVE_INTERMEDIARY"
 echo
 
-# Mapping step
-MAPPING_FILE="${INPUT_FASTA%.fasta}_mapping.tsv"
-if [ -f "$MAPPING_FILE" ]; then
-    echo "Mapping file already exists: $MAPPING_FILE. Skipping..."
-else
-    echo "Mapping sequence IDs to categories..."
-    python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA"
-fi
+# # Mapping step
+# MAPPING_FILE="${INPUT_FASTA%.fasta}_mapping.tsv"
+# if [ -f "$MAPPING_FILE" ]; then
+#     echo "Mapping file already exists: $MAPPING_FILE. Skipping..."
+# else
+#     echo "Mapping sequence IDs to categories..."
+#     python "${SCRIPTS_DIR}/mapping_helper.py" "$INPUT_FASTA"
+# fi
 
-# Cleaning step
-echo "Cleaning FASTA file..."
-python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA"
+# # Cleaning step
+# echo "Cleaning FASTA file..."
+# python "${SCRIPTS_DIR}/fasta_cleaner_helper.py" "$INPUT_FASTA"
 
-CLEAN_FASTA="${INPUT_FASTA%.fasta}_clean.fasta"
+# CLEAN_FASTA="${INPUT_FASTA%.fasta}_clean.fasta"
+
+# if [ ! -f "$CLEAN_FASTA" ]; then
+#     echo "Error: Cleaned FASTA file was not created." >&2
+#     exit 1
+# fi
+
 OUTPUT_FILE_NAME="${INPUT_FASTA%.fasta}"
-
-if [ ! -f "$CLEAN_FASTA" ]; then
-    echo "Error: Cleaned FASTA file was not created." >&2
-    exit 1
-fi
 
 # Clustering step
 CLSTR_FILE="${OUTPUT_FILE_NAME}.clstr"
 if [ -f "$CLSTR_FILE" ]; then
     echo "Cluster file already exists: $CLSTR_FILE. Skipping..."
 else
-    echo "Clustering sequences at ${PERCENTAGE_IDENTITY}% identity..."
+    # Find the lowest percentage identity value
+    if [ "${#perc_id_array[@]}" -gt 1 ]; then
+        LOWEST_PERCENTAGE="${perc_id_array[0]}"
+        for perc in "${perc_id_array[@]}"; do
+            if (( $(echo "$perc < $LOWEST_PERCENTAGE" | bc -l) )); then
+                LOWEST_PERCENTAGE="$perc"
+            fi
+        done
+    else
+        LOWEST_PERCENTAGE="${perc_id_array[0]}"
+    fi
+
     bash "${SCRIPTS_DIR}/run_cdhit.sh" \
         "$CLEAN_FASTA" \
         "$OUTPUT_FILE_NAME" \
-        "$PERCENTAGE_IDENTITY" \
+        "$LOWEST_PERCENTAGE" \
         "$THREADS" \
         "$AVAILABLE_MEMORY" \
         >/dev/null 2>&1
