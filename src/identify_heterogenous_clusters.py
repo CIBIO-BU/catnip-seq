@@ -3,8 +3,8 @@ from collections import defaultdict
 import logging
 import argparse
 
-def list_heterogenous_clusters(cluster_file, mapping_file):
-    seqid_to_tax = create_mapping_lookup_dictionary(mapping_file)
+def list_heterogenous_clusters(cluster_file, mapping_file, columns):
+    seqid_to_tax = create_mapping_lookup_dictionary(mapping_file, columns)
 
     heterogenous_clusters = []
     cluster_data = defaultdict(list)
@@ -74,9 +74,9 @@ def _check_cluster_heterogeneity(cluster_number, cluster_data, heterogenous_clus
             heterogenous_clusters.append(cluster_number)
             return
 
-def create_mapping_lookup_dictionary(mapping_file):
+def create_mapping_lookup_dictionary(mapping_file, columns):
     try:
-            map_df = pd.read_csv(mapping_file, sep='\t', header=None, index_col=None)
+            map_df = pd.read_csv(mapping_file, sep='\t', header=None, index_col=None, usecols=columns)
     except FileNotFoundError:
         raise FileNotFoundError(f"Mapping file not found: {mapping_file}")
     except Exception as e:
@@ -95,8 +95,13 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description="Identify and list heterogenous clusters.")
     arg_parser.add_argument("--cluster_file", type=str, help="Path to the cluster file.")
     arg_parser.add_argument("--mapping_file", type=str, help="Path to the mapping file between seq_ids to taxonomy.")
+    arg_parser.add_argument("--index_cols", type=str, required=True, help="Index of the columns to use for mapping categories.")
     args = arg_parser.parse_args()
-    list_heterogenous_clusters(cluster_file=args.cluster_file, mapping_file=args.mapping_file)
+
+    if args.index_cols:
+        args.index_cols = [int(value) for value in args.index_cols.split(",")]
+
+    list_heterogenous_clusters(cluster_file=args.cluster_file, mapping_file=args.mapping_file, columns=args.index_cols)
 
 
 
