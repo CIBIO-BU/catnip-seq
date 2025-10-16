@@ -40,3 +40,8 @@ The conda environment includes:
 - SAMtools (BAM/SAM file processing)
 - pysam (Python interface for SAM/BAM files)
 - pandas & numpy (data analysis)
+
+## Environment Details
+
+Divergence thresholds are filtered BELOW or EQUAL.
+For filtering divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.

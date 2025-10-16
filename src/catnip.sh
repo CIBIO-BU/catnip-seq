@@ -83,7 +83,7 @@ else
     if [ "${#perc_id_array[@]}" -gt 1 ]; then
         LOWEST_PERCENTAGE="${perc_id_array[0]}"
         for perc in "${perc_id_array[@]}"; do
-            if (( $(echo "$perc < $LOWEST_PERCENTAGE" | bc -l) )); then
+            if (( $(echo "$perc > $LOWEST_PERCENTAGE" | bc -l) )); then
                 LOWEST_PERCENTAGE="$perc"
             fi
         done
@@ -91,10 +91,12 @@ else
         LOWEST_PERCENTAGE="${perc_id_array[0]}"
     fi
 
+   HIGHEST_IDENTITY=$(printf "%.2f" "$(echo "(100 - $LOWEST_PERCENTAGE) / 100" | bc -l)")
+
     bash "${SCRIPTS_DIR}/run_cdhit.sh" \
         "$INPUT_FASTA" \
         "$OUTPUT_FILE_NAME" \
-        "$LOWEST_PERCENTAGE" \
+        "$HIGHEST_IDENTITY" \
         "$THREADS" \
         "$AVAILABLE_MEMORY" \
         >/dev/null 2>&1
