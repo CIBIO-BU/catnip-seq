@@ -106,7 +106,7 @@ else
         >/dev/null 2>&1
 fi
 
-if [ ! -f "$OUTPUT_FILE_NAME" ]; then
+if [ ! -f "$CLSTR_FILE" ]; then
     echo "Error: Clustering output was not created." >&2
     exit 1
 fi
@@ -156,6 +156,8 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
         "$INDEX_NAME" \
         1 \
         "$ALIGN_NAME"
+
+    rm -f "$CST_OUTPUT_FILE"
 
     # Process BAM file
     BAM_FILE="${ALIGN_NAME}.bam"

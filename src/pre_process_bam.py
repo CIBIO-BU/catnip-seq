@@ -36,7 +36,7 @@ def filter_cat_thresholds(processed_bam, cat_thresholds: list):
         # If threhsold is the same just filter directly to save computation time
         if len(cat_thresholds) <= 1 or all(float(threshold == cat_thresholds[0]) for threshold in cat_thresholds):
             threshold = cat_thresholds[0]
-            return processed_bam[processed_bam['divergence_prct'].astype(int) <= threshold]
+            return processed_bam[processed_bam['divergence_prct'].astype(int) >= threshold]
 
         else:
             def count_non_nan(values):
@@ -62,7 +62,7 @@ def filter_cat_thresholds(processed_bam, cat_thresholds: list):
                     return False
                 threshold = float(cat_thresholds[level - 1])
                 divergence_int = int(row['divergence_prct'])
-                return divergence_int <= threshold
+                return divergence_int >= threshold
 
             filt_threshold_df = processed_bam[processed_bam.apply(apply_threshold, axis=1)]
             return filt_threshold_df
