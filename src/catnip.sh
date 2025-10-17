@@ -55,6 +55,22 @@ fi
 # Convert percentage identity array to comma-separated string for passing to Python
 PERC_ID_STRING=$(IFS=,; echo "${perc_id_array[*]}")
 
+# Find the lowest percentage identity value
+if [ "${#perc_id_array[@]}" -gt 1 ]; then
+    LOWEST_PERCENTAGE="${perc_id_array[0]}"
+    for perc in "${perc_id_array[@]}"; do
+        if (( $(echo "$perc > $LOWEST_PERCENTAGE" | bc -l) )); then
+            LOWEST_PERCENTAGE="$perc"
+        fi
+    done
+else
+    LOWEST_PERCENTAGE="${perc_id_array[0]}"
+fi
+
+if [ "$LOWEST_PERCENTAGE" -gt 10 ]; then
+    echo "Warning: catnip might fail to produce results if the divergence exceeds 10%. This could happen due to increased mismatches between sequences, leading to alignment failures."
+fi
+
 # ---------------------------------------------------
 echo "Starting workflow with the following parameters:"
 echo " Input file: $INPUT_FASTA"
@@ -79,18 +95,6 @@ CLSTR_FILE="${OUTPUT_FILE_NAME}.clstr"
 if [ -f "$CLSTR_FILE" ]; then
     echo "Cluster file already exists: $CLSTR_FILE. Skipping..."
 else
-    # Find the lowest percentage identity value
-    if [ "${#perc_id_array[@]}" -gt 1 ]; then
-        LOWEST_PERCENTAGE="${perc_id_array[0]}"
-        for perc in "${perc_id_array[@]}"; do
-            if (( $(echo "$perc > $LOWEST_PERCENTAGE" | bc -l) )); then
-                LOWEST_PERCENTAGE="$perc"
-            fi
-        done
-    else
-        LOWEST_PERCENTAGE="${perc_id_array[0]}"
-    fi
-
    HIGHEST_IDENTITY=$(printf "%.2f" "$(echo "(100 - $LOWEST_PERCENTAGE) / 100" | bc -l)")
 
     bash "${SCRIPTS_DIR}/run_cdhit.sh" \
