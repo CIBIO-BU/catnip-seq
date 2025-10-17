@@ -33,12 +33,14 @@ def find_minimums(df):
     return minimums
 
 def filter_cat_thresholds(processed_bam, cat_thresholds: list):
-        if len(cat_thresholds) <= 1:
+        # If threhsold is the same just filter directly to save computation time
+        if len(cat_thresholds) <= 1 or all(float(threshold == cat_thresholds[0]) for threshold in cat_thresholds):
             threshold = cat_thresholds[0]
-            return process_bam[process_bam['divergence_prct'] <= threshold]
+            return processed_bam[processed_bam['divergence_prct'].astype(int) <= threshold]
 
         else:
             def count_non_nan(values):
+                # count nan values in query category to discover at which level the entry is
                 if not isinstance(values, (tuple, list)):
                     return 0
                 count = 0
@@ -55,11 +57,12 @@ def filter_cat_thresholds(processed_bam, cat_thresholds: list):
             processed_bam['cat_level'] = processed_bam['query_cat'].apply(count_non_nan)
 
             def apply_threshold(row):
-                level = row['cat_level']
+                level = row['cat_level'] # applies the threhsold according to the category/column
                 if level == 0:
                     return False
                 threshold = float(cat_thresholds[level - 1])
-                return row['divergence_prct'] <= threshold
+                divergence_int = int(row['divergence_prct'])
+                return divergence_int <= threshold
 
             filt_threshold_df = processed_bam[processed_bam.apply(apply_threshold, axis=1)]
             return filt_threshold_df
