@@ -38,34 +38,33 @@ def filter_cat_thresholds(processed_bam, cat_thresholds: list):
             threshold = cat_thresholds[0]
             return processed_bam[processed_bam['divergence_prct'].astype(int) >= threshold]
 
-        else:
-            def count_non_nan(values):
-                # count nan values in query category to discover at which level the entry is
-                if not isinstance(values, (tuple, list)):
-                    return 0
-                count = 0
-                for val in values:
-                    if val is None:
-                        continue
-                    if isinstance(val, float) and np.isnan(val):
-                        continue
-                    count += 1
+        def count_non_nan(values):
+            # count nan values in query category to discover at which level the entry is
+            if not isinstance(values, (tuple, list)):
+                return 0
+            count = 0
+            for val in values:
+                if val is None:
+                    continue
+                if isinstance(val, float) and np.isnan(val):
+                    continue
+                count += 1
 
-                return count
+            return count
 
-            processed_bam = processed_bam.copy()
-            processed_bam['cat_level'] = processed_bam['query_cat'].apply(count_non_nan)
+        processed_bam = processed_bam.copy()
+        processed_bam['cat_level'] = processed_bam['query_cat'].apply(count_non_nan)
 
-            def apply_threshold(row):
-                level = row['cat_level'] # applies the threhsold according to the category/column
-                if level == 0:
-                    return False
-                threshold = float(cat_thresholds[level - 1])
-                divergence_int = int(row['divergence_prct'])
-                return divergence_int >= threshold
+        def apply_threshold(row):
+            level = row['cat_level'] # applies the threhsold according to the category/column
+            if level == 0:
+                return False
+            threshold = float(cat_thresholds[level - 1])
+            divergence_int = int(row['divergence_prct'])
+            return divergence_int >= threshold
 
-            filt_threshold_df = processed_bam[processed_bam.apply(apply_threshold, axis=1)]
-            return filt_threshold_df
+        filt_threshold_df = processed_bam[processed_bam.apply(apply_threshold, axis=1)]
+        return filt_threshold_df
 
 def process_bam(alignment_file, cat_thresholds, mapping_file, columns, save_processed=False):
     seqid_to_cat = create_mapping_lookup_dictionary(mapping_file, columns)
