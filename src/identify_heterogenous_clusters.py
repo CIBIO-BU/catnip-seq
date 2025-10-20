@@ -62,6 +62,8 @@ def list_heterogenous_clusters(cluster_file, mapping_file, columns):
 
     print(" ".join(heterogenous_clusters))
 
+    return heterogenous_clusters
+
 def _check_cluster_heterogeneity(cluster_number, cluster_data, heterogenous_clusters):
     sequences = cluster_data[cluster_number]
 

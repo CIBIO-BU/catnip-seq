@@ -1,14 +1,11 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from identify_heterogenous_clusters import list_heterogenous_clusters
+from src.identify_heterogenous_clusters import list_heterogenous_clusters
 
 def test_list_heterogenous_clusters():
-    cluster_file = "test_cluster_file.clstr"
-    mapping_file = "test_mapping_file.tsv"
-    expected = {2}
+    cluster_file = "tests/test_cluster_file.clstr"
+    mapping_file = "tests/test_mapping_file.tsv"
+    columns = [0,1]
+    expected = ['2']
 
-    result = set(list_heterogenous_clusters(cluster_file, mapping_file  ))
+    result = list_heterogenous_clusters(cluster_file, mapping_file, columns)
 
     assert result == expected, f"Expected {expected}, but got {result}"
