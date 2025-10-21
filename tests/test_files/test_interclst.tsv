@@ -1,0 +1,4 @@
+query	query_cat	target	target_cat	edit_distance	divergence_prct
+ANGEN360-16	('Erebidae', 'Utetheisa', nan)	ALYP006-19	('Noctuidae', 'Alypiodes', 'Alypiodes bimaculata')	25	8.0
+ANGEN360-16	('Erebidae', 'Utetheisa', nan)	ALYP001-18	('Noctuidae', 'Alypiodes', nan)	31	9.9
+ALYP006-19	('Noctuidae', 'Alypiodes', 'Alypiodes bimaculata')	ALYP001-18	('Noctuidae', 'Alypiodes', nan)	21	6.7

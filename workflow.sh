@@ -56,7 +56,7 @@ while getopts "i:f:c:p:t:m:sh" opt; do
             AVAILABLE_MEMORY="$OPTARG"
             ;;
         s)
-            SAVE_INTERMEDIARY=false
+            SAVE_INTERMEDIARY=true
             ;;
         h)
             help

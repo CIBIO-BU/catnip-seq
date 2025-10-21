@@ -30,6 +30,8 @@ def compile_interclust(path):
 
     min_combined.to_csv("final_output_interclst.tsv", sep='\t', header=True, index=False)
 
+    return min_combined
+
 if __name__ == '__main__':
     arg_parse = argparse.ArgumentParser("description= Combine intra-cluster files.")
     arg_parse.add_argument("path", type=str, help='Path to the folder containing intra-cluster files.')
