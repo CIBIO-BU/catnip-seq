@@ -7,7 +7,7 @@ WRKFL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Default values
 MAPPING_FILE=""
 INDEX_COLS=""
-PERCENTAGE_IDENTITY=0.9
+PERCENTAGE_DIVERGENCE=10
 THREADS=1
 AVAILABLE_MEMORY=800
 SAVE_INTERMEDIARY=false
@@ -24,7 +24,7 @@ Required arguments:
  -c INDEX_COLS           Indices of the columns containing the categories to evaluate in the mapping file (maximum of 4). Note: column indices start from 0, where 0 refers to the sequence ID column.
 
 Optional arguments:
- -p PERCENTAGE_IDENTITY  Threshold for the percentage identity (type:float, default: 0.9)
+ -p PERCENTAGE_DIVERGENCE  Threshold for the percentage of divergence (type:float, default: 10)
  -t THREADS              Number of threads to use (default: 1)
  -m AVAILABLE_MEMORY     Available memory in MB (default: 800)
  -s                      Save intermediary files (cluster BAM and minimuM files; default: false)
@@ -47,7 +47,7 @@ while getopts "i:f:c:p:t:m:sh" opt; do
             INDEX_COLS="$OPTARG"
             ;;
         p)
-            PERCENTAGE_IDENTITY="$OPTARG"
+            PERCENTAGE_DIVERGENCE="$OPTARG"
             ;;
         t)
             THREADS="$OPTARG"
@@ -111,7 +111,7 @@ logfile="timing.log"
     "$INPUT_FASTA" \
     "$MAPPING_FILE" \
     "$INDEX_COLS" \
-    "$PERCENTAGE_IDENTITY" \
+    "$PERCENTAGE_DIVERGENCE" \
     "$THREADS" \
     "$AVAILABLE_MEMORY" \
     "$SAVE_INTERMEDIARY"  \

@@ -5,7 +5,7 @@ set -euo pipefail
 INPUT_FASTA="$1"
 MAPPING_FILE="$2"
 INDEX_COLS="$3"
-PERCENTAGE_IDENTITY="$4"
+PERCENTAGE_DIVERGENCE="$4"
 THREADS="$5"
 AVAILABLE_MEMORY="$6"
 SAVE_INTERMEDIARY="$7"
@@ -13,7 +13,6 @@ PROJECT_DIR="$8"
 SCRIPTS_DIR="$PROJECT_DIR/src"
 
 IFS=',' read -r -a index_cols_array <<< "$INDEX_COLS"
-IFS=',' read -r -a perc_id_array <<< "$PERCENTAGE_IDENTITY"
 
 # Validation checks
 if [ "${#index_cols_array[@]}" -lt 2 ]; then
@@ -26,60 +25,29 @@ if [ "${#index_cols_array[@]}" -gt 5 ]; then
     exit 1
 fi
 
-if [ "${#perc_id_array[@]}" -gt 4 ]; then
-    echo "Error: Cannot have more than 4 PERCENTAGE_IDENTITY values (one column is reserved for sequence ID)." >&2
+if [ -z "$PERCENTAGE_DIVERGENCE" ]; then
+    echo "Error: PERCENTAGE_DIVERGENCE value is required." >&2
     exit 1
 fi
 
-expected_thresholds=$((${#index_cols_array[@]} - 1))
-
-if [ "${#perc_id_array[@]}" -eq 0 ]; then
-    echo "Error: At least one PERCENTAGE_IDENTITY value is required." >&2
+# Check if multiple divergence values were provided
+IFS=',' read -r -a perc_div_array <<< "$PERCENTAGE_DIVERGENCE"
+if [ "${#perc_div_array[@]}" -gt 1 ]; then
+    echo "Error: Only one PERCENTAGE_DIVERGENCE value is allowed. Found ${#perc_div_array[@]} values." >&2
     exit 1
 fi
 
-if [ "${#perc_id_array[@]}" -eq 1 ]; then
-    single_value="${perc_id_array[0]}"
-    perc_id_array=()
-    # Replicate percentage identity value for each non-sequence ID column
-    for ((i=0; i<expected_thresholds; i++)); do
-        perc_id_array+=("$single_value")
-    done
-    echo "Warning: Single percentage identity value ($single_value) provided. Replicating for all $expected_thresholds non-sequence ID columns." >&2
-elif [ "${#perc_id_array[@]}" -ne "$expected_thresholds" ]; then
-    echo "Error: Number of PERCENTAGE_IDENTITY values (${#perc_id_array[@]}) must match number of non-ID columns ($expected_thresholds)." >&2
-    echo "       Total columns: ${#index_cols_array[@]}, ID columns: 1, Non-ID columns: $expected_thresholds" >&2
-    exit 1
-fi
-
-# Convert percentage identity array to comma-separated string for passing to Python
-PERC_ID_STRING=$(IFS=,; echo "${perc_id_array[*]}")
-
-# Find the lowest percentage identity value
-if [ "${#perc_id_array[@]}" -gt 1 ]; then
-    LOWEST_PERCENTAGE="${perc_id_array[0]}"
-    for perc in "${perc_id_array[@]}"; do
-        if (( $(echo "$perc > $LOWEST_PERCENTAGE" | bc -l) )); then
-            LOWEST_PERCENTAGE="$perc"
-        fi
-    done
-else
-    LOWEST_PERCENTAGE="${perc_id_array[0]}"
-fi
-
-if [ "$LOWEST_PERCENTAGE" -gt 10 ]; then
-    echo "Warning: catnip might fail to produce results if the divergence exceeds 10%. This could happen due to increased mismatches between sequences, leading to alignment failures."
+if (( $(echo "$PERCENTAGE_DIVERGENCE > 10" | bc -l) )); then
+    echo "Warning: catnip might fail to produce results if the divergence exceeds 10%. This could happen due to increased mismatches between sequences, leading to alignment failures." >&2
 fi
 
 # ---------------------------------------------------
 echo "Starting workflow with the following parameters:"
 echo " Input file: $INPUT_FASTA"
 echo " Mapping file: $MAPPING_FILE"
+echo " Index columns: ${index_cols_array[*]}"
 echo " Sequence ID column: ${index_cols_array[0]} (no threshold applied)"
-for i in "${!perc_id_array[@]}"; do
-    col_idx=$((i + 1))  # Offset by 1 since first column is ID
-    echo " Column: ${index_cols_array[$col_idx]} -> Percentage Identity: ${perc_id_array[$i]}"
-done
+echo " Percentage Divergence: $PERCENTAGE_DIVERGENCE%"
 echo " Threads: $THREADS"
 echo " Memory: $AVAILABLE_MEMORY MB"
 echo " Save intermediary files: $SAVE_INTERMEDIARY"
@@ -95,12 +63,12 @@ CLSTR_FILE="${OUTPUT_FILE_NAME}.clstr"
 if [ -f "$CLSTR_FILE" ]; then
     echo "Cluster file already exists: $CLSTR_FILE. Skipping..."
 else
-   HIGHEST_IDENTITY=$(printf "%.2f" "$(echo "(100 - $LOWEST_PERCENTAGE) / 100" | bc -l)")
+   IDENTITY_THRESHOLD=$(printf "%.2f" "$(echo "(100 - $PERCENTAGE_DIVERGENCE) / 100" | bc -l)")
 
     bash "${SCRIPTS_DIR}/run_cdhit.sh" \
         "$INPUT_FASTA" \
         "$OUTPUT_FILE_NAME" \
-        "$HIGHEST_IDENTITY" \
+        "$IDENTITY_THRESHOLD" \
         "$THREADS" \
         "$AVAILABLE_MEMORY" \
         >/dev/null 2>&1
@@ -164,7 +132,6 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
     if [ -f "$BAM_FILE" ]; then
         python "${SCRIPTS_DIR}/pre_process_bam.py" \
             --bam_file "$BAM_FILE" \
-            --cat_thresholds "$PERC_ID_STRING" \
             --mapping_file "$MAPPING_FILE" \
             --index_cols "$INDEX_COLS" \
             --save
