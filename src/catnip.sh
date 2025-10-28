@@ -1,20 +1,93 @@
 #!/usr/bin/env bash
+# -*- coding: utf-8 -*-
 set -euo pipefail
 
-# Parse arguments
-INPUT_FASTA="$1"
-MAPPING_FILE="$2"
-INDEX_COLS="$3"
-PERCENTAGE_DIVERGENCE="$4"
-THREADS="$5"
-AVAILABLE_MEMORY="$6"
-SAVE_INTERMEDIARY="$7"
-PROJECT_DIR="$8"
-SCRIPTS_DIR="$PROJECT_DIR/src"
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
+# Default values
+MAPPING_FILE=""
+INDEX_COLS=""
+PERCENTAGE_DIVERGENCE=10
+THREADS=1
+AVAILABLE_MEMORY=800
+SAVE_INTERMEDIARY=false
+
+
+# Help function
+help() {
+cat << EOF
+Usage: ${0##*/} -i INPUT_FASTA -f MAPPING_FILE -c INDEX_COLS [OPTIONS]
+
+Compute nucleotide divergence across user-defined categories.
+
+Required arguments:
+  -i INPUT_FASTA          Input FASTA file path.
+  -f MAPPING_FILE         Mapping file path (TSV format).
+  -c INDEX_COLS           Comma-separated indices of columns in mapping file (max 4).
+                          Column indices start from 0, where 0 is the sequence ID column.
+
+Optional arguments:
+  -p PERCENTAGE_DIVERGENCE  Threshold for percentage of divergence (default: 10)
+  -t THREADS               Number of threads to use (default: 1)
+  -m AVAILABLE_MEMORY      Available memory in MB (default: 800)
+  -s                       Save intermediary files (cluster BAM and minimum files)
+  -h                       Display this help message and exit
+
+Example:
+  ${0##*/} -i sequences.fasta -f mapping.tsv -c 0,1,2,3 -p 10 -t 8 -m 16000 -s
+
+EOF
+}
+
+# Parse arguments
+while getopts "i:f:c:p:t:m:sh" opt; do
+    case $opt in
+        i) INPUT_FASTA="$OPTARG" ;;
+        f) MAPPING_FILE="$OPTARG" ;;
+        c) INDEX_COLS="$OPTARG" ;;
+        p) PERCENTAGE_DIVERGENCE="$OPTARG" ;;
+        t) THREADS="$OPTARG" ;;
+        m) AVAILABLE_MEMORY="$OPTARG" ;;
+        s) SAVE_INTERMEDIARY=true ;;
+        h) help; exit 0 ;;
+        \?) echo "Invalid option: -$OPTARG" >&2; help; exit 1 ;;
+        :) echo "Missing required parameter: -$OPTARG" >&2; help; exit 1 ;;
+    esac
+done
+
+# Validate required arguments
+if [ -z "$INPUT_FASTA" ]; then
+    echo "Error: Input FASTA file is required (-i)." >&2
+    help
+    exit 1
+fi
+
+if [ ! -f "$INPUT_FASTA" ]; then
+    echo "Error: Input FASTA file '$INPUT_FASTA' does not exist." >&2
+    exit 1
+fi
+
+if [ -z "$MAPPING_FILE" ]; then
+    echo "Error: Mapping file is required (-f)." >&2
+    help
+    exit 1
+fi
+
+if [ ! -f "$MAPPING_FILE" ]; then
+    echo "Error: Mapping file '$MAPPING_FILE' does not exist." >&2
+    exit 1
+fi
+
+if [ -z "$INDEX_COLS" ]; then
+    echo "Error: Index columns are required (-c)." >&2
+    help
+    exit 1
+fi
+
+# Validate index columns
 IFS=',' read -r -a index_cols_array <<< "$INDEX_COLS"
 
-# Validation checks
 if [ "${#index_cols_array[@]}" -lt 2 ]; then
     echo "Error: At least 2 columns are required in INDEX_COLS (1 for sequence ID + at least 1 category column)." >&2
     exit 1
@@ -25,12 +98,12 @@ if [ "${#index_cols_array[@]}" -gt 5 ]; then
     exit 1
 fi
 
+# Validate percentage divergence
 if [ -z "$PERCENTAGE_DIVERGENCE" ]; then
     echo "Error: PERCENTAGE_DIVERGENCE value is required." >&2
     exit 1
 fi
 
-# Check if multiple divergence values were provided
 IFS=',' read -r -a perc_div_array <<< "$PERCENTAGE_DIVERGENCE"
 if [ "${#perc_div_array[@]}" -gt 1 ]; then
     echo "Error: Only one PERCENTAGE_DIVERGENCE value is allowed. Found ${#perc_div_array[@]} values." >&2
@@ -149,6 +222,7 @@ if [ "$SAVE_INTERMEDIARY" = "false" ]; then
     echo "Cleaning up intermediary files..."
     find . -type f -name '*_align.bam' -delete
     find . -type f -name '*_intraclst_mins.tsv' -delete
+    find . -type f -name ${INPUT_FASTA%.fasta} -delete
 fi
 
 echo

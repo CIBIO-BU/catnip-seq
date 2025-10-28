@@ -1,4 +1,3 @@
-# catnip/pyproject.toml
 [build-system]
 requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -6,3 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "catnip"
 version = "0.1.0"
+description = "Compute nucleotide divergence across user-defined categories"
+
+[project.scripts]
+catnip = "src.catnip_cli:main"
+
+[tool.setuptools]
+packages = ["src"]

@@ -1,0 +1,2 @@
+[console_scripts]
+catnip = src.catnip_cli:main
