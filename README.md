@@ -30,7 +30,12 @@ CATnip a tool to assess nucleotide divergence and sequence resolution between us
    pip install -e .
    ```
 
-4. **Run the test workflow:**
+5. **Check help message:**
+   ```bash
+   catnip -h
+   ```
+
+6. **Run the test workflow:**
    ```bash
    cd test-workflow
    catnip -i coi_micointf_mil.fasta -f coi_micointf_mil_mapping.tsv -c 0,1,2,3 -p 10
