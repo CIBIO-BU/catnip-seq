@@ -12,6 +12,8 @@ PERCENTAGE_DIVERGENCE=10
 THREADS=1
 AVAILABLE_MEMORY=800
 SAVE_INTERMEDIARY=false
+RUN_MAPPING_HELPER=false
+SEPARATOR="|"
 
 
 # Help function
@@ -32,16 +34,20 @@ Optional arguments:
   -t THREADS               Number of threads to use (default: 1)
   -m AVAILABLE_MEMORY      Available memory in MB (default: 800)
   -s                       Save intermediary files (cluster BAM and minimum files)
+  -M                       Run mapping helper to generate mapping file
+  -S SEPARATOR             Separator for mapping helper (default: '|')
+  -o MAPPING_OUTPUT        Output filename for mapping helper (required if -M is used)
   -h                       Display this help message and exit
 
 Example:
   ${0##*/} -i sequences.fasta -f mapping.tsv -c 0,1,2,3 -p 10 -t 8 -m 16000 -s
+  ${0##*/} -i sequences.fasta -M -S '|' -o my_mapping.tsv
 
 EOF
 }
 
 # Parse arguments
-while getopts "i:f:c:p:t:m:sh" opt; do
+while getopts "i:f:c:p:t:m:MS:o:sh" opt; do
     case $opt in
         i) INPUT_FASTA="$OPTARG" ;;
         f) MAPPING_FILE="$OPTARG" ;;
@@ -50,11 +56,49 @@ while getopts "i:f:c:p:t:m:sh" opt; do
         t) THREADS="$OPTARG" ;;
         m) AVAILABLE_MEMORY="$OPTARG" ;;
         s) SAVE_INTERMEDIARY=true ;;
+        M) RUN_MAPPING_HELPER=true ;;
+        S) SEPARATOR="$OPTARG" ;;
+        o) MAPPING_OUTPUT="$OPTARG" ;;
         h) help; exit 0 ;;
         \?) echo "Invalid option: -$OPTARG" >&2; help; exit 1 ;;
         :) echo "Missing required parameter: -$OPTARG" >&2; help; exit 1 ;;
     esac
 done
+
+# --------------------MAPPING-----------------
+# Validate mapping helper requirements
+if [ "$RUN_MAPPING_HELPER" = "true" ]; then
+    if [ -z "$MAPPING_OUTPUT" ]; then
+        echo "Error: Output filename (-o) is required when using mapping helper (-M)." >&2
+        help
+        exit 1
+    fi
+fi
+
+if [ "$RUN_MAPPING_HELPER" = "true" ] && [ -n "$INDEX_COLS" ]; then
+    echo "Error: Cannot use -M (mapping helper) and -c (index columns) together." >&2
+    echo "Use -M to generate a mapping file only, or use -c to run the full workflow." >&2
+    help
+    exit 1
+fi
+
+if [ "$RUN_MAPPING_HELPER" = "true" ]; then
+    echo "Running mapping helper..."
+    python "${SCRIPTS_DIR}/mapping_helper.py" \
+        "$INPUT_FASTA" \
+        --separator "$SEPARATOR" \
+        --output "$MAPPING_OUTPUT"
+
+    if [ ! -f "$MAPPING_OUTPUT" ]; then
+        echo "Error: Mapping helper failed to create output file." >&2
+        exit 1
+    fi
+
+    echo "Mapping helper completed successfully."
+    exit 0
+
+fi
+# --------------------------------------------
 
 # Validate required arguments
 if [ -z "$INPUT_FASTA" ]; then
