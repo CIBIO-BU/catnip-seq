@@ -12,6 +12,7 @@ PERCENTAGE_DIVERGENCE=10
 THREADS=1
 AVAILABLE_MEMORY=800
 SAVE_INTERMEDIARY=false
+CREATE_CLEANED_OUTPUT=true
 RUN_MAPPING_HELPER=false
 SEPARATOR="|"
 
@@ -36,6 +37,7 @@ Optional arguments:
   -s                       Save intermediary files (cluster BAM and minimum files)
   -M                       Run mapping helper to generate mapping file
   -S SEPARATOR             Separator for mapping helper (default: '|')
+  -C                       Disable creation of cleaned final output file
   -o MAPPING_OUTPUT        Output filename for mapping helper (required if -M is used)
   -h                       Display this help message and exit
 
@@ -47,7 +49,7 @@ EOF
 }
 
 # Parse arguments
-while getopts "i:f:c:p:t:m:MS:o:sh" opt; do
+while getopts "i:f:c:p:t:m:CMS:o:sh" opt; do
     case $opt in
         i) INPUT_FASTA="$OPTARG" ;;
         f) MAPPING_FILE="$OPTARG" ;;
@@ -56,6 +58,7 @@ while getopts "i:f:c:p:t:m:MS:o:sh" opt; do
         t) THREADS="$OPTARG" ;;
         m) AVAILABLE_MEMORY="$OPTARG" ;;
         s) SAVE_INTERMEDIARY=true ;;
+        C) CREATE_CLEANED_OUTPUT=false ;;
         M) RUN_MAPPING_HELPER=true ;;
         S) SEPARATOR="$OPTARG" ;;
         o) MAPPING_OUTPUT="$OPTARG" ;;
@@ -168,6 +171,7 @@ echo " Percentage Divergence: $PERCENTAGE_DIVERGENCE%"
 echo " Threads: $THREADS"
 echo " Memory: $AVAILABLE_MEMORY MB"
 echo " Save intermediary files: $SAVE_INTERMEDIARY"
+echo " Create cleaned output: $CREATE_CLEANED_OUTPUT"
 echo
 
 # ------- WORKFLOW -----------------
@@ -267,6 +271,12 @@ if [ "$SAVE_INTERMEDIARY" = "false" ]; then
     find . -type f -name '*_align.bam' -delete
     find . -type f -name '*_intraclst_mins.tsv' -delete
     find . -type f -name ${INPUT_FASTA%.fasta} -delete
+fi
+
+if [ "$CREATE_CLEANED_OUTPUT" = "true" ]; then
+    echo "Cleaning final output file..."
+    python "${SCRIPTS_DIR}/clean_output.py" \
+        --save_clean
 fi
 
 echo

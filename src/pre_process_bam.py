@@ -72,7 +72,7 @@ def process_bam(alignment_file, mapping_file, columns, save_processed=False):
     return minimums
 
 if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser(description="Pre-process bam file to remove selg-aligments and same group aligments and retrieve edit distances and divergence scores.")
+    arg_parser = argparse.ArgumentParser(description="Pre-process bam file to remove self-aligments and same group aligments and retrieve edit distances and divergence scores.")
     arg_parser.add_argument("--bam_file", type=str, help="Path to the bam file.")
     arg_parser.add_argument("--mapping_file", type=str, help="Path to the mapping file (tab-separated).")
     arg_parser.add_argument("--index_cols", type=str, required=True, help="Index of the columns to use for mapping file.")
