@@ -1,6 +1,6 @@
 FROM fedora:42
 
-LABEL maintainer="nuno.fonseca at gmail.com"
+LABEL maintainer="nuno.fonseca at biopolis.pt"
 
 RUN dnf update -y && dnf install -y bzip2-devel  bzip2 zlib-devel git gcc wget conda curl tar bash pip && dnf clean all
 ADD src ./src/
