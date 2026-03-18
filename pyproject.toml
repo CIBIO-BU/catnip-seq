@@ -8,7 +8,10 @@ version = "0.1.0"
 description = "Compute nucleotide divergence across user-defined categories"
 
 [project.scripts]
-catnip = "src.catnip_cli:main"
+catnip = "catnip.catnip_cli:main"
 
-[tool.setuptools]
-packages = ["src"]
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+catnip = ["*.sh"]

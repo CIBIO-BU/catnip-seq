@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Minimal wrapper to call catnip bash script.
+Wrapper to call catnip bash script.
 """
 
 import sys
 import subprocess
-from pathlib import Path
+import importlib.resources as r
 
 
 def main():
     """
     Main entry point. Simply forwards all arguments to catnip.sh.
     """
-    script_dir = Path(__file__).parent.resolve()
-    catnip_script = script_dir / "catnip.sh"
+    catnip_script = r.files("catnip") / "catnip.sh"
 
-    if not catnip_script.exists():
+    if not catnip_script.is_file():
         print(f"Error: catnip.sh not found at {catnip_script}", file=sys.stderr)
         sys.exit(1)
 
