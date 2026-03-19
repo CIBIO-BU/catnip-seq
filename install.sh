@@ -50,30 +50,31 @@ function check_system_deps {
 
 function install_catnip {
     pinfo "Installing catnip..."
-    pip install .
+    if [ "$INSTALL_DIR-" = "-" ]; then
+	pip install .
+    else
+	pip install --prefix $INSTALL_DIR .
+    fi
     # pip show catnip
     # whereis catnip
     pinfo "Installing catnip...done."    
 }
 
 function usage {
-    echo "Usage: install.sh [-i toplevel_folder_to_install_mbk -x soft name -h -H]
+    echo "Usage: install.sh [-i toplevel_folder_to_install_catnip -x soft name -h -H]
 Options:
-  -C     - Conda installation mode
   -h     - print this help information"
 }
 
 ## by default install all software
 MODE=all
 DEBUG=0
-CONDA_INSTALL=0
 
 while getopts "i:x:CThH"  Option
 do
     case $Option in
 	i ) INSTALL_DIR=$OPTARG;;
 	x ) MODE=$OPTARG;;
-	C ) CONDA_INSTALL=1;;
 	h ) usage; exit;;
 	H ) usage; exit;;
 	* ) usage; exit 1;;
