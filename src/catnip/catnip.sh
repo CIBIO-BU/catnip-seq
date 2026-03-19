@@ -6,6 +6,7 @@ SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
 # Default values
+INPUT_FASTA=""
 MAPPING_FILE=""
 INDEX_COLS=""
 PERCENTAGE_DIVERGENCE=10
@@ -15,6 +16,7 @@ SAVE_INTERMEDIARY=false
 CREATE_CLEANED_OUTPUT=true
 RUN_MAPPING_HELPER=false
 SEPARATOR="|"
+MAPPING_OUTPUT=""
 
 
 # Help function
@@ -49,7 +51,7 @@ EOF
 }
 
 # Parse arguments
-while getopts "i:f:c:p:t:m:CMS:o:sh" opt; do
+    while getopts ":i:f:c:p:t:m:CMS:o:sh" opt; do
     case $opt in
         i) INPUT_FASTA="$OPTARG" ;;
         f) MAPPING_FILE="$OPTARG" ;;
@@ -63,10 +65,24 @@ while getopts "i:f:c:p:t:m:CMS:o:sh" opt; do
         S) SEPARATOR="$OPTARG" ;;
         o) MAPPING_OUTPUT="$OPTARG" ;;
         h) help; exit 0 ;;
-        \?) echo "Invalid option: -$OPTARG" >&2; help; exit 1 ;;
-        :) echo "Missing required parameter: -$OPTARG" >&2; help; exit 1 ;;
+        \?)
+            echo "Error: Invalid option -${OPTARG:-}" >&2
+            help
+            exit 1
+            ;;
+        :)
+            echo "Error: Option -${OPTARG:-} requires an argument." >&2
+            help
+            exit 1
+            ;;
     esac
 done
+
+if [ "$OPTIND" -eq 1 ]; then
+    echo "Error: No arguments provided." >&2
+    help
+    exit 1
+fi
 
 # --------------------MAPPING-----------------
 # Validate mapping helper requirements
@@ -86,6 +102,11 @@ if [ "$RUN_MAPPING_HELPER" = "true" ] && [ -n "$INDEX_COLS" ]; then
 fi
 
 if [ "$RUN_MAPPING_HELPER" = "true" ]; then
+    if [ -z "$INPUT_FASTA" ]; then
+        echo "Error: Input FASTA (-i) is required when using -M." >&2
+        help
+        exit 1
+    fi
     echo "Running mapping helper..."
     python "${SCRIPTS_DIR}/mapping_helper.py" \
         "$INPUT_FASTA" \
@@ -104,6 +125,7 @@ fi
 # --------------------------------------------
 
 # Validate required arguments
+set -u
 if [ -z "$INPUT_FASTA" ]; then
     echo "Error: Input FASTA file is required (-i)." >&2
     help
