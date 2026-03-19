@@ -22,5 +22,5 @@ echo "Creating/updating conda environment from $ENV_FILE..."
 conda env create -f "$ENV_FILE" || conda env update -f "$ENV_FILE"
 
 echo "Environment setup complete!"
-echo "To activate: conda activate base-invaders"
+echo "To activate: conda activate catnip"
 echo "To deactivate: conda deactivate"
