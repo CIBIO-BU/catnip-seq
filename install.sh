@@ -47,13 +47,29 @@ function check_system_deps {
 #check_system_deps
 
 ###########################################
-
+#
 function install_catnip {
     pinfo "Installing catnip..."
     if [ "$INSTALL_DIR-" = "-" ]; then
 	pip install .
     else
-	pip install --prefix $INSTALL_DIR .
+	#pip install --prefix $INSTALL_DIR .
+	PY_VERSION=$(python3 -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
+	# override catnip script
+	cat <<EOF > "$INSTALL_DIR/bin/catnip"
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+set -e
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+PREFIX="\$(dirname "\$SCRIPT_DIR")"
+LIB_PATH="\$PREFIX/lib/$PY_VERSION/site-packages"
+
+if [ -d "\$LIB_PATH" ]; then
+    export PYTHONPATH="\$LIB_PATH:\$PYTHONPATH"
+fi
+
+exec python3 -m catnip.catnip_cli "\$@"
+EOF
     fi
     # pip show catnip
     # whereis catnip
