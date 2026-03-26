@@ -5,6 +5,9 @@ from pathlib import Path
 from pre_process_bam import find_minimums
 
 def compile_interclust(path):
+    """
+    Compiles intra-cluster files into a single inter-cluster file by finding the minimum edit distance for each pair of query and target categories across all intra-cluster files.
+    """
     dir = Path(path)
     files = list(dir.rglob('*intraclst_mins.tsv'))
 

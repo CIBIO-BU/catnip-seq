@@ -44,8 +44,8 @@ Optional arguments:
   -h                       Display this help message and exit
 
 Example:
-  ${0##*/} -i sequences.fasta -f mapping.tsv -c 0,1,2,3 -p 10 -t 8 -m 16000 -s
-  ${0##*/} -i sequences.fasta -M -S '|' -o my_mapping.tsv
+  catnip -i sequences.fasta -f mapping.tsv -c 0,1,2,3 -p 10 -t 8 -m 16000 -s
+  catnip -i sequences.fasta -M -S '|' -o my_mapping.tsv
 
 EOF
 }

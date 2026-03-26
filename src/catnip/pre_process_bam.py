@@ -83,9 +83,9 @@ if __name__ == '__main__':
         args.index_cols = [int(value) for value in args.index_cols.split(",")]
 
     process_bam(alignment_file=args.bam_file, mapping_file=args.mapping_file, columns=args.index_cols, save_processed=args.save)
-    # path = '/home/camilababo/Documents/coding-projects/CD-HIT/test-workflow/coi_micointf_mil_4_align.bam'
-    # mapping_file = '/home/camilababo/Documents/coding-projects/CD-HIT/test-workflow/coi_micointf_mil_mapping.tsv'
-    # process_bam(path, mapping_file)
+    # path = 'test-workflow/coi_micointf_mil_4_align.bam'
+    # mapping_file = 'test-workflow/coi_micointf_mil_mapping.tsv'
+    # process_bam(path, mapping_file, columns=[0, 1, 2, 3])
     # # Before: (219699, 4)
     # # After: (4762, 4)
 

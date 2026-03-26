@@ -3,6 +3,9 @@ import argparse
 import os
 
 def create_mappings(fasta_file, sep='|', output_file=None):
+    """
+    Creates a mapping table from sequence IDs to categories or taxonomy based on the headers in a FASTA file.
+    """
     mapping_tab = []
     fasta_file_name = os.path.splitext(os.path.basename(fasta_file))[0]
     if not output_file:
