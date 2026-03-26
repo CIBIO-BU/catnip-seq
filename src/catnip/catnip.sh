@@ -22,7 +22,7 @@ MAPPING_OUTPUT=""
 # Help function
 help() {
 cat << EOF
-Usage: ${0##*/} -i INPUT_FASTA -f MAPPING_FILE -c INDEX_COLS [OPTIONS]
+Usage: catnip -i INPUT_FASTA -f MAPPING_FILE -c INDEX_COLS [OPTIONS]
 
 Compute nucleotide divergence across user-defined categories.
 
