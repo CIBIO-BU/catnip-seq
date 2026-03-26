@@ -56,6 +56,7 @@ function install_catnip {
 	#pip install --prefix $INSTALL_DIR .
 	PY_VERSION=$(python3 -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
 	# override catnip script
+	mkdir -p $INSTALL_DIR/bin
 	cat <<EOF > "$INSTALL_DIR/bin/catnip"
 #!/usr/bin/env bash
 # -*- coding: utf-8 -*-
