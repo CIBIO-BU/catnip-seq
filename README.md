@@ -53,5 +53,4 @@ The conda environment includes:
 
 ## Environment Details
 
-Divergence thresholds are filtered BELOW or EQUAL.
 For filtering divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.
