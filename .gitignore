@@ -14,3 +14,4 @@ test-micointf-mil/
 dist/*
 src/catnip_seq.egg-info/*
 src/__pycache__/*
+__pycache__/*
