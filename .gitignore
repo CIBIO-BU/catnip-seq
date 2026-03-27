@@ -11,3 +11,6 @@ test-cases/no_tx/ntx.sam
 ./test-cases/total_input-ID.fasta
 test-micointf-full/*
 test-micointf-mil/
+dist/*
+src/catnip_seq.egg-info/*
+src/__pycache__/*
