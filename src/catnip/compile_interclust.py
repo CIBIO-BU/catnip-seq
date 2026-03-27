@@ -2,7 +2,7 @@ import pandas as pd
 import argparse
 from pathlib import Path
 
-from pre_process_bam import find_minimums
+from catnip.pre_process_bam import find_minimums
 
 def compile_interclust(path):
     """

@@ -1,4 +1,4 @@
-from src.identify_heterogenous_clusters import list_heterogenous_clusters
+from src.catnip.identify_heterogenous_clusters import list_heterogenous_clusters
 
 def test_list_heterogenous_clusters():
     cluster_file = "tests/test_files/test_cluster_file.clstr"

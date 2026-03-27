@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import os
 
-from identify_heterogenous_clusters import create_mapping_lookup_dictionary
+from catnip.identify_heterogenous_clusters import create_mapping_lookup_dictionary
 
 def find_minimums(df):
     def format_category(cat):

@@ -1,4 +1,4 @@
-from src.pre_process_bam import *
+from src.catnip.pre_process_bam import *
 import pandas.testing as pdt
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-from src.compile_interclust import *
+from src.catnip.compile_interclust import *
 import pandas.testing as pdt
 
 def test_compile_interclust():

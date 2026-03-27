@@ -1,4 +1,4 @@
-from src.cluster_extractor import *
+from src.catnip.cluster_extractor import *
 
 def test_cluster_extractor():
     cluster_file = "tests/test_files/test_cluster_file.clstr"
