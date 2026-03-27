@@ -1,6 +1,0 @@
-Metadata-Version: 2.4
-Name: catnip
-Version: 0.1.1
-Summary: Compute nucleotide divergence across user-defined categories
-License-File: LICENSE
-Dynamic: license-file

@@ -5,6 +5,30 @@ set -euo pipefail
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
+REQUIRED_TOOLS=("bowtie2" "samtools" "cd-hit")
+
+missing_tools=()
+
+for tool in "${REQUIRED_TOOLS[@]}"; do
+    if ! command -v "$tool" &> /dev/null; then
+        missing_tools+=("$tool")
+    fi
+done
+
+if [ ${#missing_tools[@]} -ne 0 ]; then
+    echo "Error: Missing required tools: ${missing[*]}" >&2
+    echo >&2
+    echo "To install all dependencies, you can create the conda environment from our YAML file:" >&2
+    echo "  # Using the YAML directly from GitHub" >&2
+    echo "  conda env create -f https://raw.githubusercontent.com/CIBIO-BU/catnip-seq/main/catnip-env.yml" >&2
+    echo "  conda activate catnip" >&2
+    echo >&2
+    echo "  # Or, if you want to rename the environment:" >&2
+    echo "  conda env create -f https://raw.githubusercontent.com/CIBIO-BU/catnip-seq/main/catnip-env.yml -n my-catnip-env" >&2
+    echo "  conda activate my-catnip-env" >&2
+    exit 1
+fi
+
 # Default values
 INPUT_FASTA=""
 MAPPING_FILE=""
@@ -49,6 +73,12 @@ Example:
 
 EOF
 }
+
+# Check for --help manually
+if [[ "$1" == "--help" ]]; then
+    help
+    exit 0
+fi
 
 # Parse arguments
     while getopts ":i:f:c:p:t:m:CMS:o:sh" opt; do

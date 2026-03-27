@@ -8,7 +8,6 @@ import sys
 import subprocess
 import importlib.resources as r
 
-
 def main():
     """
     Main entry point. Simply forwards all arguments to catnip.sh.

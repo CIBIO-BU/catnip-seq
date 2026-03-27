@@ -11,7 +11,7 @@ tests: FORCE
 
 # src/catnip.egg-info/PKG-INFO:Version
 release:
-	sed -i "s/^Version: .*/Version: $(VERSION)/" src/catnip.egg-info/PKG-INFO
+	sed -i "s/^Version: .*/Version: $(VERSION)/" src/catnip_seq.egg-info/PKG-INFO
 	git pull && \
 	git commit -m "New version $(VERSION)" . && \
 	git push && git tag -a "$(VERSION)" -m "v$(VERSION)" && \
@@ -28,7 +28,7 @@ docker: FORCE
 	docker build -f Dockerfile --tag bu/catnip:v$(VERSION) .
 
 run_docker_test: docker
-	docker run -i -t bu/catnip:v$(VERSION) 
+	docker run -i -t bu/catnip:v$(VERSION)
 
 
 
@@ -37,4 +37,4 @@ install:
 	./install.sh -i ../catnip_install
 
 
-FORCE: 
+FORCE:
