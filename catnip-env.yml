@@ -2,7 +2,6 @@ name: catnip
 channels:
   - conda-forge
   - bioconda
-  - defaults
 dependencies:
   - python=3.11
   - cd-hit=4.8.1
@@ -13,6 +12,3 @@ dependencies:
   - pysam
   - pandas
   - numpy
-  - pip
-  - setuptools
-  - wheel

@@ -4,8 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "catnip"
+
 version = "0.1.0"
-description = "Compute nucleotide divergence across user-defined categories"
+
+authors = [
+    { name="Camila Babo", email="camila.babo@cibio.up.pt}
+]
+
+description = "Explore nucleotide divergence and sequence resolution across user-defined categories."
+
+readme = "README.md"
+
+requires-python = ">=3.9"
+
+license = { text = "GPL-3.0-or-later" }
+
+dependencies = [
+    "pysam",
+    "pandas",
+    "numpy"
+]
+
+[project.urls]
+Homepage = "https://github.com/CIBIO-BU/catnip"
+Issues = "https://github.com/CIBIO-BU/catnip/issues"
 
 [project.scripts]
 catnip = "catnip.catnip_cli:main"
@@ -15,3 +37,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 catnip = ["*.sh"]
+
+[tool.setuptools]
+license-files = ["LICEN[CS]E*"]
