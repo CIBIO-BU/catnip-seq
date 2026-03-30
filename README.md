@@ -1,5 +1,7 @@
 # CATnip Workflow
 
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/version.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/latest_release_date.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/downloads.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/license.svg)](https://anaconda.org/bioconda/catnip-seq)
+
 CATnip a tool to assess nucleotide divergence and sequence resolution between user-defined categories.
 
 ## Prerequisites
@@ -7,7 +9,22 @@ CATnip a tool to assess nucleotide divergence and sequence resolution between us
 - Conda or Mamba
 - Git
 
-## Quick Start
+## Installation (Recommended)
+
+Install CATnip directly from Bioconda:
+
+```bash
+conda create -n catnip -c conda-forge -c bioconda catnip-seq
+conda activate catnip
+```
+
+Or faster with mamba:
+
+```bash
+mamba create -n catnip -c conda-forge -c bioconda catnip-seq
+```
+
+## Development Installation
 
 1. **Clone the repository:**
    ```bash
@@ -51,6 +68,6 @@ The conda environment includes:
 - pysam (Python interface for SAM/BAM files)
 - pandas & numpy (data analysis)
 
-## Environment Details
+## Documentation
 
-For filtering divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.
+Divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.

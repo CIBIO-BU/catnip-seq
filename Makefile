@@ -1,5 +1,5 @@
 ## catnip
-VERSION=0.1.4
+VERSION=0.1.6
 
 ## Do nothing by default
 all:
@@ -11,11 +11,24 @@ tests: FORCE
 
 # src/catnip.egg-info/PKG-INFO:Version
 release:
-	sed -i "s/^Version: .*/Version: $(VERSION)/" src/catnip_seq.egg-info/PKG-INFO
+	# Update version in pyproject.toml
+	sed -i 's/^version *= *.*/version = "$(VERSION)"/' pyproject.toml
+
+	# Clean previous builds
+	rm -rf dist build src/*.egg-info
+
+	# Build package
+	python3 -m build
+
+	# Commit and tag
 	git pull && \
-	git commit -m "New version $(VERSION)" . && \
-	git push && git tag -a "$(VERSION)" -m "v$(VERSION)" && \
-	git push --follow-tags
+	git add pyproject.toml && \
+	git commit -e -m "New version $(VERSION)" . && \
+	git tag -a "$(VERSION)" -m "v$(VERSION)" && \
+	git push && git push --tags
+
+	# Upload to PyPI (will prompt for API token)
+	twine upload dist/*
 
 release2master:
 	git checkout master && \

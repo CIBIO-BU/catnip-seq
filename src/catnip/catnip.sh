@@ -16,7 +16,7 @@ for tool in "${REQUIRED_TOOLS[@]}"; do
 done
 
 if [ ${#missing_tools[@]} -ne 0 ]; then
-    echo "Error: Missing required tools: ${missing[*]}" >&2
+    echo "Error: Missing required tools: ${missing_tools[*]}" >&2
     echo >&2
     echo "To install all dependencies, you can create the conda environment from our YAML file:" >&2
     echo "  # Using the YAML directly from GitHub" >&2
@@ -75,7 +75,7 @@ EOF
 }
 
 # Check for --help manually
-if [[ "$1" == "--help" ]]; then
+if [[ "${1:-}" == "--help" ]] then
     help
     exit 0
 fi
