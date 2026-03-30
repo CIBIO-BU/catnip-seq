@@ -5,6 +5,8 @@ set -euo pipefail
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
+VERSION="0.1.7"
+
 REQUIRED_TOOLS=("bowtie2" "samtools" "cd-hit")
 
 missing_tools=()
@@ -65,6 +67,7 @@ Optional arguments:
   -S SEPARATOR             Separator for mapping helper (default: '|')
   -C                       Disable creation of cleaned final output file
   -o MAPPING_OUTPUT        Output filename for mapping helper (required if -M is used)
+  -v                       Display version information and exit
   -h                       Display this help message and exit
 
 Example:
@@ -80,8 +83,13 @@ if [[ "${1:-}" == "--help" ]] then
     exit 0
 fi
 
+if [[ "${1:-}" == "--version" ]]; then
+    echo "catnip $VERSION"
+    exit 0
+fi
+
 # Parse arguments
-    while getopts ":i:f:c:p:t:m:CMS:o:sh" opt; do
+    while getopts ":i:f:c:p:t:m:CMS:o:svh" opt; do
     case $opt in
         i) INPUT_FASTA="$OPTARG" ;;
         f) MAPPING_FILE="$OPTARG" ;;
@@ -94,6 +102,7 @@ fi
         M) RUN_MAPPING_HELPER=true ;;
         S) SEPARATOR="$OPTARG" ;;
         o) MAPPING_OUTPUT="$OPTARG" ;;
+        v) echo "catnip $VERSION"; exit 0 ;;
         h) help; exit 0 ;;
         \?)
             echo "Error: Invalid option -${OPTARG:-}" >&2

@@ -16,3 +16,4 @@ src/catnip_seq.egg-info/*
 src/__pycache__/*
 __pycache__/*
 .pytest_cache/*
+build/*

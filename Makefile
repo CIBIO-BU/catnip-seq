@@ -1,5 +1,5 @@
 ## catnip
-VERSION=0.1.6
+VERSION=0.1.7
 
 ## Do nothing by default
 all:
@@ -13,6 +13,7 @@ tests: FORCE
 release:
 	# Update version in pyproject.toml
 	sed -i 's/^version *= *.*/version = "$(VERSION)"/' pyproject.toml
+	sed -i 's/^VERSION=.*/VERSION="$(VERSION)"/' src/catnip/catnip.sh
 
 	# Clean previous builds
 	rm -rf dist build src/*.egg-info
