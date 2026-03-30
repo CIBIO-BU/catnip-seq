@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "catnip-seq"
 
-version = "0.1.6"
+version = "0.1.7"
 
 authors = [
   { name="Camila Babo", email="camila.babo@cibio.up.pt" },
