@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
-VERSION="0.1.7"
+VERSION="0.1.8"
 
 REQUIRED_TOOLS=("bowtie2" "samtools" "cd-hit")
 
@@ -78,7 +78,7 @@ EOF
 }
 
 # Check for --help manually
-if [[ "${1:-}" == "--help" ]] then
+if [[ "${1:-}" == "--help" ]]; then
     help
     exit 0
 fi
