@@ -1,6 +1,5 @@
 # CATnip Workflow
-
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/version.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/latest_release_date.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/downloads.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/license.svg)](https://anaconda.org/bioconda/catnip-seq)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/catnip-seq/README.html) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/version.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/latest_release_date.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/downloads.svg)](https://anaconda.org/bioconda/catnip-seq) [![Anaconda-Server Badge](https://anaconda.org/bioconda/catnip-seq/badges/license.svg)](https://anaconda.org/bioconda/catnip-seq)
 
 CATnip a tool to assess nucleotide divergence and sequence resolution between user-defined categories.
 
