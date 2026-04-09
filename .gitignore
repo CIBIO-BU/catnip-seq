@@ -13,8 +13,7 @@ test-micointf-full/*
 test-micointf-mil/
 dist/*
 src/catnip_seq.egg-info/*
-src/__pycache__/*
-__pycache__/*
 .pytest_cache/*
 build/*
 test-cases/*
+__pycache__/
