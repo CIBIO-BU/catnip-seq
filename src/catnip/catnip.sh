@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPTS_DIR")"
 
-VERSION="0.1.8"
+VERSION="0.1.9"
 
 REQUIRED_TOOLS=("bowtie2" "samtools" "cd-hit")
 
@@ -304,7 +304,7 @@ for CLUSTER_NUMBER in $HET_CLUSTERS_LIST; do
     bash "${SCRIPTS_DIR}/run_bowtie_aligner.sh" \
         "$CST_OUTPUT_FILE" \
         "$INDEX_NAME" \
-        1 \
+        "$THREADS" \
         "$ALIGN_NAME"
 
     rm -f "$CST_OUTPUT_FILE"
