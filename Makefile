@@ -1,5 +1,5 @@
 ## catnip
-VERSION=0.1.9
+VERSION=0.1.10
 
 ## Do nothing by default
 all:

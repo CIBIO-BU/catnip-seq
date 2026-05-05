@@ -67,6 +67,7 @@ The conda environment includes:
 - pysam (Python interface for SAM/BAM files)
 - pandas & numpy (data analysis)
 
-## Documentation
+## Implementation Details
 
-Divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.
+- Divergence values are rounded to the NEAREST WHOLE VALUE. However, output is presented with one decimal case.
+- Taxa absent from the output file were excluded from the alignment step, as they can be reliably distinguished from all other taxa in the dataset based on the input divergence thresholds.

@@ -6,8 +6,7 @@ dependencies:
   - python=3.11
   - cd-hit=4.8.1
   - bowtie2=2.5.4
-  - samtools=1.21
-  - ncurses=6.4
+  - samtools>=1.21
   - pysam
   - pandas
   - numpy
