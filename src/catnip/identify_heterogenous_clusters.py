@@ -78,7 +78,7 @@ def _check_cluster_heterogeneity(cluster_number, cluster_data, heterogenous_clus
 
 def create_mapping_lookup_dictionary(mapping_file, columns):
     try:
-            map_df = pd.read_csv(mapping_file, sep='\t', header=None, index_col=None, usecols=columns)
+            map_df = pd.read_csv(mapping_file, sep='\t', header=None, index_col=None, usecols=columns, keep_default_na=False, na_values=[])
     except FileNotFoundError:
         raise FileNotFoundError(f"Mapping file not found: {mapping_file}")
     except Exception as e:
